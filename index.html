@@ -1,0 +1,907 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1d2320">
+<meta name="description" content="Wild Imaginary West character sheets for our posse.">
+<title>Posse Ledger</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Barlow+Condensed:wght@500;600;700&display=swap">
+<style>
+/* Layout: a ledger of character sheets — roster of posse cards, then a two-column sheet (vitals left, gear/abilities right) with a dice tray docked at the bottom. */
+:root{
+  --paper:#e9ece6; --card:#f6f7f3; --ink:#1d2320; --muted:#5d6660; --line:#c7cdc3;
+  --brass:#9a6a14; --brass-soft:#e6d4ad; --rust:#a83a28; --rust-soft:#f1d6cf;
+  --sage:#3f6b57; --sage-soft:#d3e2d8; --die-black:#23272b; --die-gold:#d6a31c; --die-ink:#f4f1e6;
+  --shadow:0 1px 0 rgba(0,0,0,.04),0 6px 18px -12px rgba(20,30,25,.35);
+  --display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --label:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#131715; --card:#1b201d; --ink:#e4e8e1; --muted:#99a39b; --line:#323a35;
+  --brass:#d9a441; --brass-soft:#3d321c; --rust:#e0705a; --rust-soft:#3e231d;
+  --sage:#7fb69a; --sage-soft:#1f3329; --die-black:#0b0d0e; --die-gold:#d9a83a; --die-ink:#f4f1e6;
+  --shadow:0 1px 0 rgba(0,0,0,.3),0 8px 22px -14px rgba(0,0,0,.8); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#131715; --card:#1b201d; --ink:#e4e8e1; --muted:#99a39b; --line:#323a35;
+  --brass:#d9a441; --brass-soft:#3d321c; --rust:#e0705a; --rust-soft:#3e231d;
+  --sage:#7fb69a; --sage-soft:#1f3329; --die-black:#0b0d0e; --die-gold:#d9a83a; --die-ink:#f4f1e6;
+  --shadow:0 1px 0 rgba(0,0,0,.3),0 8px 22px -14px rgba(0,0,0,.8); color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0}
+[hidden]{display:none!important}
+html,body{background:var(--paper);color:var(--ink)}
+body{font-family:var(--body);font-size:15px;line-height:1.45}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:20px 140px}
+h1,h2,h3{font-family:var(--display);font-weight:800;letter-spacing:.01em;text-wrap:balance;margin:0;line-height:1.02}
+h1{font-size:clamp(34px,6vw,54px);font-weight:900;text-transform:uppercase}
+h2{font-size:22px;text-transform:uppercase}
+h3{font-size:18px;text-transform:uppercase}
+.lbl{font-family:var(--label);text-transform:uppercase;letter-spacing:.08em;font-size:12.5px;font-weight:600;color:var(--muted)}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--card);border-radius:6px;padding:7px 12px;font-family:var(--label);font-weight:600;letter-spacing:.04em;text-transform:uppercase;font-size:14px;line-height:1.1}
+.btn:hover{border-color:var(--brass)}
+.btn.primary{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.btn.brass{background:var(--brass);color:#fff;border-color:var(--brass)}
+.btn.danger{color:var(--rust);border-color:var(--rust)}
+.btn.sm{padding:4px 9px;font-size:13px}
+.btn[disabled]{opacity:.4;cursor:not-allowed}
+.icon-btn{width:30px;height:30px;border-radius:6px;border:1px solid var(--line);background:var(--card);font-weight:700;display:inline-grid;place-items:center;font-size:16px;padding:0}
+input[type=text],input[type=number],select,textarea{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:6px;padding:7px 9px;width:100%}
+textarea{min-height:76px;resize:vertical}
+input[type=number]{font-variant-numeric:tabular-nums}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.spread{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.stack{display:grid;gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;box-shadow:var(--shadow);min-width:0}
+.card > h2{margin-bottom:12px}
+.pill{display:inline-flex;align-items:center;gap:4px;border-radius:99px;padding:2px 9px;font-family:var(--label);font-size:12.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;border:1px solid var(--line);white-space:nowrap}
+.pill.rust{background:var(--rust-soft);border-color:transparent;color:var(--rust)}
+.pill.brass{background:var(--brass-soft);border-color:transparent;color:var(--brass)}
+.pill.sage{background:var(--sage-soft);border-color:transparent;color:var(--sage)}
+.tabnum{font-variant-numeric:tabular-nums}
+.banner{border:1px dashed var(--brass);background:var(--brass-soft);color:var(--ink);border-radius:8px;padding:10px 12px;font-size:14px}
+
+/* masthead */
+.mast{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;border-bottom:3px double var(--ink);padding-bottom:12px;margin-bottom:20px}
+.mast .sub{font-family:var(--label);letter-spacing:.14em;text-transform:uppercase;font-size:13px;color:var(--brass);font-weight:700}
+
+/* roster */
+.roster{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.char-card{text-align:left;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;box-shadow:var(--shadow);display:grid;gap:10px;position:relative}
+.char-card:hover{border-color:var(--brass)}
+.char-card .name{font-family:var(--display);font-weight:800;font-size:26px;text-transform:uppercase;line-height:1}
+.hpbar{height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.hpbar > i{display:block;height:100%;background:var(--sage)}
+.hpbar.low > i{background:var(--rust)}
+.empty{border:2px dashed var(--line);border-radius:12px;padding:28px;text-align:center;display:grid;gap:10px;justify-items:center}
+
+/* wizard */
+.steps{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 18px}
+.steps span{font-family:var(--label);font-weight:600;letter-spacing:.06em;text-transform:uppercase;font-size:13px;padding:4px 10px;border-radius:99px;border:1px solid var(--line);color:var(--muted)}
+.steps span.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.steps span.done{color:var(--sage);border-color:var(--sage)}
+.trade-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.trade{text-align:left;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:14px;display:grid;gap:8px;align-content:start}
+.trade.sel{border-color:var(--brass);box-shadow:0 0 0 2px var(--brass) inset}
+.trade .tname{font-family:var(--display);font-weight:800;font-size:24px;text-transform:uppercase;line-height:1}
+.trade .ab{font-size:13.5px}
+.trade .ab b{font-family:var(--label);text-transform:uppercase;letter-spacing:.05em;font-size:12.5px}
+.skill-alloc{display:grid;gap:10px}
+.skill-alloc .srow{display:grid;grid-template-columns:110px auto 1fr;gap:12px;align-items:center}
+.dicecount{display:flex;gap:3px;flex-wrap:wrap}
+.choice-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.choice{text-align:left;border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--card);font-size:13.5px}
+.choice.sel{border-color:var(--brass);box-shadow:0 0 0 2px var(--brass) inset}
+.choice b{display:block;font-family:var(--label);text-transform:uppercase;letter-spacing:.05em;font-size:14px;margin-bottom:2px}
+.field{display:grid;gap:4px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.prompts{margin:0;padding-left:18px;color:var(--muted);font-size:13.5px}
+
+/* sheet */
+.sheet-head{display:grid;gap:8px;margin-bottom:16px}
+.sheet-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:14px;align-items:start}
+.vitals{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center}
+.hp-big{font-family:var(--display);font-weight:900;font-size:64px;line-height:.9;font-variant-numeric:tabular-nums}
+.hp-big small{font-size:26px;color:var(--muted);font-weight:800}
+.bleed{border:2px solid var(--rust);background:var(--rust-soft);border-radius:10px;padding:12px;display:grid;gap:8px}
+.dead{border:2px solid var(--ink);border-radius:10px;padding:14px;text-align:center;display:grid;gap:8px}
+.pips{display:flex;gap:5px;flex-wrap:wrap}
+.pip{width:22px;height:22px;border-radius:50%;border:2px solid var(--brass);background:transparent}
+.pip.full{background:var(--brass)}
+.acebar{display:flex;gap:4px}
+.acebar i{width:18px;height:26px;border-radius:3px;border:1.5px solid var(--die-gold);display:block}
+.acebar i.on{background:var(--die-gold)}
+.skill-row{display:grid;grid-template-columns:96px minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.skill-row:first-of-type{border-top:0}
+.skill-row .sname{font-family:var(--display);font-weight:800;font-size:20px;text-transform:uppercase;line-height:1}
+.dchip{width:18px;height:18px;border-radius:4px;display:inline-block}
+.dchip.b{background:var(--die-black)}
+.dchip.g{background:var(--die-gold)}
+.status-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center;padding:7px 0;border-top:1px solid var(--line)}
+.status-row:first-of-type{border-top:0}
+.status-row.on .stname{color:var(--rust)}
+.stname{font-family:var(--label);font-weight:700;text-transform:uppercase;letter-spacing:.05em;font-size:15px}
+.sev{display:inline-flex;align-items:center;gap:6px}
+.sev b{min-width:20px;text-align:center;font-variant-numeric:tabular-nums;font-size:17px}
+.ability{border-top:1px solid var(--line);padding:10px 0;display:grid;gap:4px}
+.ability:first-of-type{border-top:0}
+.ability.locked{opacity:.55}
+.ability .aname{font-family:var(--label);font-weight:700;text-transform:uppercase;letter-spacing:.05em;font-size:15.5px}
+.ability p{margin:0;font-size:13.5px}
+.uses{display:inline-flex;gap:6px;align-items:center}
+.uses input{width:18px;height:18px;accent-color:var(--brass)}
+.tbl-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{font-family:var(--label);text-transform:uppercase;letter-spacing:.06em;font-size:12px;color:var(--muted);text-align:left;font-weight:600;padding:4px 6px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:6px;border-bottom:1px solid var(--line);vertical-align:middle;font-variant-numeric:tabular-nums}
+td.wname{font-weight:600;min-width:130px}
+.poolbtn{border:1px solid var(--line);background:var(--paper);border-radius:5px;padding:3px 7px;font-family:var(--label);font-weight:700;font-size:13.5px;letter-spacing:.03em;white-space:nowrap}
+.poolbtn:hover{border-color:var(--brass)}
+.item-list{display:grid;gap:6px}
+.item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center}
+.talents{display:flex;flex-wrap:wrap;gap:6px}
+.talent{border:1px solid var(--line);border-radius:99px;padding:3px 10px;font-family:var(--label);font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.talent.on{background:var(--sage-soft);color:var(--sage);border-color:transparent}
+.spend{display:grid;gap:8px}
+.spend .srow{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:10px;align-items:center;border-top:1px solid var(--line);padding-top:8px}
+.cost{font-family:var(--display);font-weight:900;font-size:24px;color:var(--brass);text-align:center}
+.combat-strip{border:2px solid var(--brass);border-radius:10px;padding:12px;display:grid;gap:10px;background:var(--card)}
+details summary{cursor:pointer;font-family:var(--label);text-transform:uppercase;letter-spacing:.06em;font-weight:600;font-size:13px;color:var(--muted)}
+
+/* dice tray */
+.tray{position:fixed;left:0;right:0;bottom:0;background:var(--ink);color:var(--paper);padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));z-index:20;box-shadow:0 -10px 30px -12px rgba(0,0,0,.5)}
+.tray-in{max-width:1180px;margin:0 auto;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.tray .tlabel{font-family:var(--label);text-transform:uppercase;letter-spacing:.07em;font-weight:600;font-size:13px;opacity:.75}
+.tray .total{font-family:var(--display);font-weight:900;font-size:34px;line-height:1}
+.tray .note{font-size:13.5px;opacity:.9}
+.dice-row{display:flex;gap:5px;flex-wrap:wrap}
+.die{width:34px;height:34px;border-radius:7px;display:grid;place-items:center;position:relative}
+.die.b{background:var(--die-black);box-shadow:inset 0 0 0 1.5px #555b60}
+.die.g{background:var(--die-gold)}
+.die svg{width:24px;height:24px}
+.die.rr::after{content:"";position:absolute;top:3px;right:3px;width:6px;height:6px;border-radius:50%;background:#7fd3a6}
+.tray .history{max-height:180px;overflow:auto;width:100%;border-top:1px solid rgba(255,255,255,.15);padding-top:8px;display:grid;gap:4px;font-size:13.5px}
+.tray .legend{display:flex;gap:10px;align-items:center;font-size:12px;opacity:.8;flex-wrap:wrap}
+.tray .legend span{display:inline-flex;align-items:center;gap:4px}
+.mini-die{width:18px;height:18px;border-radius:4px;background:var(--die-black);display:inline-grid;place-items:center}
+.mini-die svg{width:13px;height:13px}
+.confirm{display:inline-flex;gap:6px;align-items:center}
+@media (max-width:860px){.sheet-grid{grid-template-columns:1fr}}
+@media (max-width:520px){
+  .two{grid-template-columns:1fr}
+  .skill-alloc .srow{grid-template-columns:90px auto;}
+  .skill-alloc .srow .hint{grid-column:1/-1}
+  .hp-big{font-size:52px}
+  .tray .total{font-size:28px}
+}
+@media (prefers-reduced-motion:no-preference){.die{animation:pop .22s ease-out both}@keyframes pop{from{transform:scale(.6) rotate(-20deg);opacity:.2}to{transform:none;opacity:1}}}
+</style>
+
+</head>
+<body>
+<div class="wrap" id="app">
+  <div class="mast"><div><div class="sub">Wild Imaginary West</div><h1>Posse Ledger</h1></div></div>
+  <div class="empty"><h2>Loading the posse…</h2><p class="muted">Character sheets for everyone at the table will appear here.</p></div>
+</div>
+<div class="tray" id="tray"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBG-z6iYzmWlIan0wgixXVv3GWCfX9LQhM",
+  authDomain: "posse-ledger.firebaseapp.com",
+  projectId: "posse-ledger",
+  storageBucket: "posse-ledger.firebasestorage.app",
+  messagingSenderId: "241156793414",
+  appId: "1:241156793414:web:ce2844578978af8bb65647"
+};
+/* ======================= GAME DATA (from the Official Guidebook) ======================= */
+const SKILLS=["charm","finesse","intuition","nerve"];
+const SKILL_LABEL={charm:"Charm",finesse:"Finesse",intuition:"Intuition",nerve:"Nerve"};
+const SKILL_USE={charm:"Persuade, barter, calm a horse",finesse:"Sneak, tinker, aim · turn order",intuition:"Track, notice, sense danger",nerve:"Climb, break free, endure"};
+const BLACK=["blank","blank","spur","hit","hit","ace"], GOLD=["blank","spur","hit","hit","hit","ace"];
+const TIERS=[
+ {name:"Tenderfoot",p:0,ranged:"Used",melee:"Used",scrap:0,cash:5,packs:1,items:0},
+ {name:"Cowpoke",p:10,ranged:"Basic",melee:"Basic",scrap:8,cash:10,packs:1,items:1},
+ {name:"Trailblazer",p:25,ranged:"Premium",melee:"Basic",scrap:16,cash:20,packs:1,items:2},
+ {name:"Roughrider",p:50,ranged:"Premium",melee:"Premium",scrap:24,cash:40,packs:2,items:3},
+ {name:"Wrangler",p:75,ranged:"Elite",melee:"Premium",scrap:36,cash:60,packs:2,items:4},
+ {name:"Legend",p:100,ranged:"Elite",melee:"Elite",scrap:48,cash:80,packs:2,items:5}];
+const QRANK={Used:0,Basic:1,Premium:2,Elite:3};
+const PACKS=[
+ {name:"Pathfinder's Pack",items:["Backpack","Bedroll","Ball peen hammer & rivets","Rations","Waterskin","Push-button sparker","Lantern","Pain Pills ×2 (2B First Aid)"],tip:"Only pack with healing — the Doctor's pick"},
+ {name:"Explorer's Pack",items:["Backpack","Thick blanket","Crowbar","Rations","Waterskin","Flint & steel","Journal & fountain pen","Compass (+1B to Intuition to navigate)"]},
+ {name:"Wanderer's Pack",items:["Backpack","Tarp","Wrench set","Rations","Waterskin","Bow drill","30 yards of rope","Fishing pole (+1B to Finesse to fish)"]},
+ {name:"Traveler's Pack",items:["Backpack","Bedroll","Multi-tool","Rations","Waterskin","Matches","Novel","Harmonica (+1B to Charm to play music)"]}];
+const KEEPSAKES=["A picture of your family's homestead","A letter from a family member or friend","A wanted poster with your face on it","A pocket watch with a meaningful inscription","A silver harmonica","A set of paints and canvas","A handkerchief with an insignia belonging to a mystery enemy","A pocket knife with your initials carved in it","A locket with a picture of your beloved","A dried flower preserved in the pages of a notebook","A fossil of a trilobite wrapped in cloth","A coded message inscribed on a crumpled note"];
+const TALENTS=[["Rolling with Skills",["Charm","Finesse","Intuition","Nerve"]],["Weapons & Items",["Rifles","Shotguns","Revolvers","Bows","Melee weapons","Mounted weapons","Explosives","First Aid","Traps"]],["Other",["Defense","Mechs","Forstalls"]]];
+const STATUSES=[
+ {k:"afraid",n:"Afraid",sk:["charm"],fx:"Can't move toward the source; actions against it use half dice (keep Gold)."},
+ {k:"burned",n:"Burned",sk:["finesse"],fx:"Lose Health equal to severity at the end of each of your turns.",lasting:"Max Health −2 until treated (Burn Relief or a doctor)"},
+ {k:"dazed",n:"Dazed",sk:["intuition"],fx:"After spending Grit, roll 1B: Blank or Spur and the action fails."},
+ {k:"electrocuted",n:"Electrocuted",sk:["nerve"],fx:"No Aim or Dodge; Gold dice on attacks and items become Black. +1 severity if carrying a battery."},
+ {k:"poisoned",n:"Poisoned",sk:["nerve"],fx:"Roll 2 fewer dice on every Skill roll.",lasting:"1 fewer die on Skill rolls until treated (Antidote or a doctor)"},
+ {k:"trapped",n:"Trapped",sk:["finesse","nerve"],fx:"Can't Move or Dodge. At 8 a human is Captured.",max:14},
+ {k:"unconscious",n:"Unconscious",sk:["intuition"],fx:"Can't act except to try clearing this. Regain 1 Health when cleared."}];
+
+const T=(id,n,d,o={})=>({id,n,d,...o});
+const TRADES={
+ doctor:{n:"Doctor",role:"Healing & Support",tag:"A skillful expert in the ever-necessary art of healing.",ab:[
+  T("curative","Curative Care","The art of healing is crucial to your posse, and you know how to make your First Aid supplies last. Consumable First Aid items used by you have twice as many uses.",{start:1}),
+  T("curative2","Curative Care 2","When using a First Aid item, gain an additional +1B. (2/day): You're able to use mundane items in your healing. Using materials available to you, spend 2 Grit and roll 2G, healing an ally's wounds equal to the amount of Hits.",{day:1}),
+  T("fieldmedic","Field Medic","Your studies have taught you how to identify and treat the effects of most poisons and venoms. In one hour, you can develop a remedy that will remove the Lasting Effect of the Poisoned Status."),
+  T("crippling","Crippling Precision","(2/day): Your knowledge of anatomy aids you in determining the fragile parts of a body. After successfully doing damage to a target any movement during its next turn will cost twice the amount of Grit.",{day:1}),
+  T("bioamp","Biological Amplification","With your physiological prowess, you're able to enhance those around you. Spend 2 Grit and choose 1 ally within Short Range. Give this ally either an Aim Action or a Dodge Action [1B] to be used on their next turn, at no Grit cost to them."),
+  T("bedside","Bedside Manner","(2/day): Your experience in high-stakes medical work gives you a sense of composure in stressful situations. Choose up to 4 allies within Arm's Reach. These allies temporarily gain +1G for their next roll made with any Skill.",{day:1}),
+  T("aith1","Healing Grenade (First Aid)","Spend 2 Grit, choose a location within Short Range, and roll 2G. All allies within Short Range of this location regain Health equal to the number of Hits rolled. The “Bang!” property applies.",{aith:1,start:1,pool:"2G"}),
+  T("aith2","Experimental Grenade (First Aid)","Your Healing Grenade now has the opposite effect against enemies. Enemies in Range lose Health equal to the number of Hits rolled. The “Bang!” property still applies.",{aith:2,pool:"2G"})]},
+ gunslinger:{n:"Gunslinger",role:"Gunfights & Bounties",tag:"Marksmanship and quick-draw are unmatched.",ab:[
+  T("sharp","Sharpshooter","You aim more effectively by anticipating the target's intentions. On any attacks at Short Range or longer, you automatically bypass 1 of the target's Defense.",{start:1}),
+  T("sharp2","Sharpshooter 2","Your marksmanship is unmatched. Going forward, any attacks at Short Range or longer automatically bypass 2 of the target's Defense. (2/day): For one turn, any of your Ranged attacks can increase by 1 Range level.",{day:1}),
+  T("cut","Cut of the Profit","As long as you have a “Neutral” or better Reputation with your employer, you receive 20% more money for bounties or other hired jobs at the time of completion."),
+  T("deadeye","Deadeye","(2/day): Experience outranks everything. When you take the Aim Action before attacking, you may reroll 2 dice of your choice, instead of 1.",{day:1}),
+  T("notoriety","A Certain Notoriety","Your business is to know how and where to find your bounty. In any large city you visit, you have a contact in a guild related to this line of work. This contact can provide information on your bounty's habits, last known location, or other rumors."),
+  T("quickdraw","Quick-Draw","(2/day): Your lightning-fast reaction time has kept you alive this long. You gain +2B to Finesse rolls made to determine turn order.",{day:1}),
+  T("aith1","Rapid Fire (Pistols)","Time slows down and bullets fly. Spend 2 Grit and choose 1 target within Short Range. Roll 6B and deal damage to this target equal to the number of Hits rolled.",{aith:1,start:1,pool:"6B"}),
+  T("aith2","Bullet Storm (Pistols)","Your Rapid Fire becomes a raging storm. Spend 2 Grit, roll 4G, and increase to Long Range. Instead of a single target, assign the damage rolled between multiple targets.",{aith:2,pool:"4G"})]},
+ hunter:{n:"Hunter",role:"Creatures & Tracking",tag:"A gift for understanding the West's dangerous inhabitants.",ab:[
+  T("insight","Monster Insight","Your experience in the West gives you a great understanding of the monsters living here. The Warden will reveal information about the behavior of a monster that you can see. Additionally, gain +1B to Intuition rolls made to Scan with a Forstall.",{start:1}),
+  T("insight2","Monster Insight 2","Your sense of monster strengths and weaknesses evolves. Going forward, use +1G to Intuition rolls made to Scan with a Forstall. (2/day): Spend 2 Grit to find a monster's weak point, and grant your allies +1G to their next attack against the monster.",{day:1}),
+  T("stalking","Stalking Prey","You are an expert in surveying tracks or scat. Gain +1B to Intuition rolls made to track a creature. Then, add 2 Hits to your first attack against this creature."),
+  T("gamecall","Game Call","(2/day): Using a device of your own creation, you can mimic the sounds of an animal or monster. The creature must move inside the next closest Range measurement (from Distant Range to Long Range, from Long Range to Short Range).",{day:1}),
+  T("buddy","Hunting Buddy","You have a way with animals, and often keep one close to you. Choose one Small or Tiny animal. It has 3 Health and cannot attack, but will follow basic commands such as Seek, Retrieve, or Hide. You can vaguely understand each other's intentions."),
+  T("mask","Nature's Mask","(2/day): Your experience in the western landscape allows you to use available materials to become one with your surroundings. Gain +2B to Finesse rolls made to hide or be stealthy.",{day:1}),
+  T("aith1","Beastmaster's Roar (Charm)","You stand up tall, puff out your chest, and yell intimidatingly at a Medium or smaller creature within Short Range. Spend 2 Grit and roll 4B. Inflict the Afraid Status with a Severity equal to the number of Hits.",{aith:1,start:1,pool:"4B"}),
+  T("aith2","Berating Shout (Charm)","Your Beastmaster's Roar can now reprimand a creature. After targeting a monster currently in its Frenzy, spend 2 Grit and roll 2G. The monster loses its Frenzied state for an amount of turns equal to the number of Hits.",{aith:2,pool:"2G"})]},
+ marshal:{n:"Marshal",role:"Endurance & Leadership",tag:"Inspires allies to triumph even when faced with the impossible.",ab:[
+  T("fired","Fired Up","You call on your experience and fervor to revitalize yourself for one turn. Doing so temporarily increases your max Grit to 9 for one turn, but it will be limited to only 3 Grit during the following turn.",{start:1}),
+  T("fired2","Fired Up 2","Your energy is infectious. Choose 2 allies within Short Range. These chosen allies may temporarily increase their max Grit to 8 for their next turn. Your max Grit is reduced to 2 on your next turn. (2/day): When you use this ability, regain 2 Health.",{day:1}),
+  T("enlist","Enlist Recruit","While in a populated area, you can convince 1 civilian to assist you as long as you have a “Helpful” or better Reputation with them. They can perform basic tasks to the best of their ability, but won't do anything too dangerous. The Warden acts for the Recruit."),
+  T("serve","Serve & Protect","(2/day): After you take the Dodge Action, and when an ally within Arm's Reach is the target of an attack, you may allow this ally to gain its benefits instead of yourself.",{day:1}),
+  T("warm","Warm Reception","Your presence allows you to blend in among the common people. As long as your reputation with a Faction is “Suspicious” or better, consider it as being one level higher. For example, “Suspicious” becomes “Neutral”, or “Helpful” becomes “Revered”."),
+  T("brawler","Town Brawler","(2/day): You're able to interpret aggressive body language and present a decent threat in fistfights. You gain +2B to Nerve Challenge Rolls made to wrestle, grapple, or restrain during your brawl.",{day:1}),
+  T("aith1","Rallying Cry (Charm)","Your call to arms is emboldening. Spend 2 Grit and choose up to 4 allies within Short Range. Until your next turn, each chosen ally gains +3G for Defense. Those at Long Range gain +1G.",{aith:1,start:1}),
+  T("aith2","Inspiring Address (Charm)","You've learned to fine tune your words to the trials of those who hear you. Spend 2 Grit and roll 3G. Any ally within Short Range of you may remove 1 Severity level of any one Status for every Hit rolled.",{aith:2,pool:"3G"})]},
+ mechanic:{n:"Mechanic",role:"Machines & Upgrades",tag:"Innovations can lead to new opportunities in the West.",ab:[
+  T("armament","Enhanced Armament","You've constructed a wearable gauntlet of scrap metal and technological parts. It acts as a Melee Weapon with a 2G / 2 Grit attack, a small built-in battery, and 1 upgrade slot.",{start:1}),
+  T("armament2","Enhanced Armament 2","As an expert in tinkering, you've developed an improved version of your gauntlet. It now has a second upgrade slot. (2/day): Gain an additional +1B when you take the Dodge Action.",{day:1}),
+  T("salvager","Perpetual Salvager","The endless craving for useful components to add to your bits box allows you to more effectively salvage Scrap. After the Warden rolls to determine how much Scrap is salvaged, roll 1G and gain additional Scrap equal to the number of Hits.",{pool:"1G"}),
+  T("forstalleff","Forstall Efficiency","(2/day): With a little dial-turning and button-mashing, you're able to briefly increase the effectiveness of a Forstall's signal. After rolling with a Forstall's dice pool to Sweep, you can convert one successful Hit to an Ace.",{day:1}),
+  T("weaponsmith","Weaponsmith","Your expertise in upgrades and careful cable management skills allows you to create 1 additional Upgrade Slot for 1 of your weapons at any given time. This slot is maintained by you and doesn't transfer with the weapon if traded, lost, or sold."),
+  T("restoration","Mechanical Restoration","(2/day): Your knowledge of machinery is first-class, especially when it comes to repairs. Spend 4 Grit and roll 3G to repair a mech and restore its Mech Health equal to the amount of Hits rolled.",{day:1,pool:"3G"}),
+  T("aith1","Mechanized Haymaker (Melee)","Your Enhanced Armament converts kinetic energy over time. As a Melee Attack Action, release this energy in one massive punch, rolling 4G against your target.",{aith:1,start:1,pool:"4G"}),
+  T("aith2","Electrified Prod (Melee)","With some modifications, your Armament can release an electrical charge. Spend 2 Grit and roll 4G, inflicting the Electrocuted Status with a Severity equal to the number of Hits.",{aith:2,pool:"4G"})]},
+ prospector:{n:"Prospector",role:"Explosives & Mining",tag:"If there are treasures to be found, the Prospector uncovers them. If not, there's always joy in an explosion.",ab:[
+  T("detonator","Remote Detonator","With your own self-built device, you've perfected the craft of explosives. You can pair 1 Explosive to your Detonator. If you spend 2 Grit, you can take the Prepare Action to detonate the explosive at any time before your next turn.",{start:1}),
+  T("detonator2","Remote Detonator 2","The number of Explosives you can pair to your Detonator increases to 2 at a time, and can be triggered together or separately. (2/day): You've concocted an explosive putty that can only be paired to your Detonator. Roll 2G when setting off this Explosive.",{day:1,pool:"2G"}),
+  T("echoes","Echoes in the Dark","You know underground terrain like the back of your hand. By tapping on walls and listening carefully, you can detect hollow spaces, hidden passages, and whether or not something is hiding around the next corner."),
+  T("digging","Digging Deep","(2/day): You find the will to fight through exhaustion and physical weakness. Spend 2 Grit and roll 2G. Gain Health equal to the amount of Hits (refer to the Nerve talent when rerolling Spurs). Health gained in this way can temporarily exceed your Max Health.",{day:1,pool:"2G"}),
+  T("dirt","Face in the Dirt","Too many close calls with explosions has taught you how to take advantage of natural cover. When you have the benefits of either Light or Heavy Cover, gain an additional +1B to roll with Defense."),
+  T("diamond","Diamond in the Rough","(2/day): With your experience picking flecks of gold from piles of dirt, you're able to detect important details others might not. Gain +2B to Intuition rolls made to find ore or other precious underground resources.",{day:1}),
+  T("aith1","Seismic Charge (Explosives)","Spend 3 Grit to slam a directional explosive into the ground. Any Medium or smaller creature within Short Range and a 90° arc is pushed away from you up to Short Range and is knocked to the ground.",{aith:1,start:1}),
+  T("aith2","Terraform Spike (Explosives)","When planted in the ground, your Seismic Charge can now drop a projectile that shatters the earth around it, creating an area of Rough Terrain with a radius equal to Short Range. Allies caught in this area also gain Light Cover.",{aith:2})]},
+ trapper:{n:"Trapper",role:"Traps & Navigation",tag:"Knowledge of monster country keeps them one step ahead.",ab:[
+  T("trapexp","Trap Expertise","You rely on your mechanical knowledge to survive in dangerous situations. Gain an additional +1G when setting Traps (including improvised traps).",{start:1}),
+  T("trapexp2","Trap Expertise 2","Your proficiency with traps has increased. Going forward, use +2G when setting traps. (2/day): You've learned how to make Bait more convincing. When a monster rolls with Intuition to avoid Bait set by you, it temporarily loses -1B for its roll.",{day:1}),
+  T("guide","Wilderness Guide","Your knowledge of the landscape helps you avoid getting lost. You can also lead your posse to a location within 30 minutes of travel to find either food, water, or shelter."),
+  T("snare","Split-Second Snare","(2/day): With practiced hands and no need for thought, certain traps come second-nature to you. Spend 4 Grit and use the necessary materials to quickly set an improvised Snare trap [2B] during combat.",{day:1,pool:"2B"}),
+  T("escape","Escape Artist","When you are inflicted with the Trapped Status, temporarily gain +1G to Finesse or Nerve rolls made to remove the Status."),
+  T("locksmith","Locksmith","(2/day): Your experience setting traps has taught you how to bypass them. Gain +2B to Finesse rolls made to pick locks or otherwise disable similar equipment.",{day:1}),
+  T("aith1","Dust Devil Engine (Traps)","Deploy a contraption that kicks up a swirling cyclone of debris. Spend 2 Grit and choose a location at Short Range. Until the end of your next turn, the cyclone grants Light Cover and obscures line of sight to anything within Short Range.",{aith:1,start:1}),
+  T("aith2","Sandstorm Turbine (Traps)","With some kitbashing, your Engine is now more threatening. Spend 2 Grit, choose a location, and then roll 3G. Anything caught in the debris is inflicted with the Dazed Status of a Severity equal to the number of Hits.",{aith:2,pool:"3G"})]}
+};
+// Weapons: [name, category, quality, slots, grit, arm, short, long, distant, cost]
+const W=(n,c,q,s,g,a,sh,l,d,cost)=>({name:n,cat:c,quality:q,slots:s,grit:g,arm:a,short:sh,long:l,distant:d,cost});
+const CATALOG=[
+ W("Used Pistol","Revolvers","Used",2,2,"1B","2B","","",12),
+ W("Brig & Jones Co. Model 310","Revolvers","Basic",2,2,"1B","1B1G","","",18),
+ W("Lockheed HJ-87 “Negotiator”","Revolvers","Basic",2,2,"1B","2G","","",25),
+ W("Finncaster Company Green","Revolvers","Premium",2,2,"1B","3G","1B","",47),
+ W("Brig & Jones Field Model 330 (Revolver)","Revolvers","Premium",2,1,"1B","2B","1B","",60),
+ W("Lockheed EG-92 “Mediator” (Revolver)","Revolvers","Elite",2,1,"1B","1B1G","1B","",78),
+ W("Finncaster Company Silver (Revolver)","Revolvers","Elite",2,1,"1B","2G","1B","",87),
+ W("Used Rifle","Rifles","Used",4,4,"1G","3B","3G","",20),
+ W("Brig & Jones Co. Model 910","Rifles","Basic",4,4,"1G","3B","2B2G","",25),
+ W("Lockheed OT-49 “Defender”","Rifles","Basic",4,4,"1G","3B","1B3G","",30),
+ W("Brig & Jones Co. Model 930","Rifles","Premium",4,3,"1G","3B","3G","",45),
+ W("Finncaster Company Red","Rifles","Premium",4,3,"1G","3B","2B2G","",50),
+ W("Lockheed GA-57 “Ranger”","Rifles","Elite",4,3,"1G","3B","1B3G","",75),
+ W("Finncaster Company Gold","Rifles","Elite",4,3,"1G","3B","4G","",88),
+ W("Finncaster Precision Rifle","Rifles","Elite",2,3,"1G","","4G","4B",114),
+ W("Used Shotgun","Shotguns","Used",4,4,"1G","3G","","",18),
+ W("Brig & Jones Co. Model 610","Shotguns","Basic",4,4,"1G","4G","","",24),
+ W("Lockheed LT-63 “Executor”","Shotguns","Basic",4,4,"1G","2B3G","1B","",33),
+ W("Brig & Jones Co. Model 630","Shotguns","Premium",4,3,"1G","4G","1B","",58),
+ W("Finncaster Company Blue","Shotguns","Premium",4,3,"1G","2B3G","2B","",67),
+ W("Lockheed PL-71 “Punisher”","Shotguns","Elite",4,3,"1G","5G","2B","",80),
+ W("Finncaster Company Black","Shotguns","Elite",4,3,"1G","1B5G","2B","",92),
+ W("Outrider Tech Hand Crossbow","Bows","Basic",2,2,"1B","2B","","",10),
+ W("Handcraft Shortbow","Bows","Basic",2,3,"1B","2B","1B","",15),
+ W("Handcraft Longbow","Bows","Premium",2,3,"1G","2G","2B","",23),
+ W("Handcraft Recurve Bow","Bows","Premium",2,3,"1G","3B1G","2B","",40),
+ W("Outrider Tech Recurve Bow","Bows","Premium",2,3,"1G","2B2G","1B1G","",45),
+ W("Outrider Tech Compound Bow","Bows","Elite",3,3,"1G","1B3G","3B","",65),
+ W("Outrider Tech Crossbow","Bows","Elite",3,3,"1B","4G","2B1G","",74),
+ W("Fists","Melee weapons","Used",0,2,"1B","","","",0),
+ W("Pocket Knife","Melee weapons","Used",0,2,"1G","1B","","",1),
+ W("Handcraft Club","Melee weapons","Basic",1,3,"2G","1B","","",2),
+ W("Handcraft Whip","Melee weapons","Basic",1,3,"2B","","","",4),
+ W("Handcraft Boomerang","Melee weapons","Basic",1,3,"1B","2B","","",5),
+ W("Handcraft Brass Knuckles","Melee weapons","Basic",1,2,"2G","","","",6),
+ W("Handcraft Spear","Melee weapons","Basic",2,3,"2B1G","3B","","",8),
+ W("Eastling Arsenal Fixed-Blade","Melee weapons","Basic",1,2,"1B1G","1B","","",8),
+ W("Eastling Arsenal Hatchet","Melee weapons","Basic",1,3,"2B1G","2B","","",11),
+ W("Eastling Colorado Toothpick","Melee weapons","Premium",1,2,"2G","2B","","",12),
+ W("Handcraft Pickaxe","Melee weapons","Premium",2,4,"3G","2B","","",15),
+ W("Handcraft Lumberjack Ax","Melee weapons","Premium",2,4,"4G","3B","","",17),
+ W("Artillery Sword","Melee weapons","Elite",2,3,"1B3G","1B","","",21),
+ W("Cavalry Saber","Melee weapons","Elite",2,3,"4G","1B","","",24),
+ W("Eastling Arsenal Half-Pike","Melee weapons","Elite",3,3,"2B2G","4B","","",28)];
+const GAUNTLET={name:"Mechanic's Gauntlet",cat:"Melee weapons",quality:"Crafted",slots:1,grit:2,arm:"2G",short:"",long:"",distant:"",cost:0,note:"Built-in battery"};
+const PRESTIGE_TITLE=p=>[...TIERS].reverse().find(t=>p>=t.p).name;
+
+/* ======================= HELPERS ======================= */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const clone=o=>JSON.parse(JSON.stringify(o));
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const getPath=(o,p)=>p.split(".").reduce((a,k)=>a==null?a:a[k],o);
+function setPath(o,p,v){const ks=p.split(".");let a=o;ks.slice(0,-1).forEach(k=>{if(a[k]==null||typeof a[k]!=="object")a[k]={};a=a[k]});a[ks.at(-1)]=v}
+function pathObj(p,v){const o={};setPath(o,p,v);return o}
+function deepMerge(a,b){for(const k in b){if(b[k]&&typeof b[k]==="object"&&!Array.isArray(b[k])&&a[k]&&typeof a[k]==="object"&&!Array.isArray(a[k]))deepMerge(a[k],b[k]);else a[k]=clone(b[k])}return a}
+function parsePool(s){const o={b:0,g:0};String(s||"").toUpperCase().replace(/(\d+)\s*([BG])/g,(_,n,c)=>{o[c==="B"?"b":"g"]+=+n});return o}
+const poolStr=p=>[p.g?p.g+"G":"",p.b?p.b+"B":""].join("")||"—";
+const skillTotal=s=>s.b+s.g;
+const survive=(b,g)=>Math.round((1-Math.pow(.5,b)*Math.pow(1/3,g))*100);
+const uid=()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);
+
+const FACE_SVG={
+ blank:'',
+ hit:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="6.5" fill="currentColor"/></svg>',
+ ace:'<svg viewBox="0 0 24 24"><circle cx="7.5" cy="12" r="4.6" fill="currentColor"/><circle cx="16.5" cy="12" r="4.6" fill="currentColor"/></svg>',
+ spur:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3.2"/><path d="M12 2v5M12 17v5M2 12h5M17 12h5M4.9 4.9l3.5 3.5M15.6 15.6l3.5 3.5M4.9 19.1l3.5-3.5M15.6 8.4l3.5-3.5"/></svg>'};
+const FACE_NAME={blank:"Blank",spur:"Spur",hit:"Hit",ace:"Ace"};
+
+/* ======================= DICE ======================= */
+function rollDice(pool,{talent=false,aim=0}={}){
+  const dice=[];
+  const one=c=>(c==="g"?GOLD:BLACK)[Math.floor(Math.random()*6)];
+  for(let i=0;i<pool.g;i++)dice.push({c:"g",f:one("g")});
+  for(let i=0;i<pool.b;i++)dice.push({c:"b",f:one("b")});
+  if(talent)dice.forEach(d=>{let n=0;while(d.f==="spur"&&n<20){d.f=one(d.c);d.rr=1;n++}});
+  for(let a=0;a<aim;a++){ // Aim: reroll the worst die once
+    const order={blank:0,spur:1,hit:2,ace:3};
+    const worst=dice.filter(d=>!d.aimed).sort((x,y)=>order[x.f]-order[y.f])[0];
+    if(worst&&order[worst.f]<2){worst.f=one(worst.c);worst.rr=1;worst.aimed=1;if(talent)while(worst.f==="spur")worst.f=one(worst.c)}
+  }
+  const hits=dice.reduce((s,d)=>s+(d.f==="hit"?1:d.f==="ace"?2:0),0);
+  const aces=dice.filter(d=>d.f==="ace").length;
+  return {dice,hits,aces};
+}
+const tray={last:null,history:[],open:false};
+function showRoll(label,res,note="",charName=""){
+  tray.last={label,res,note,charName,t:Date.now()};
+  tray.history.unshift({label,hits:res?res.hits:null,note,charName});
+  tray.history=tray.history.slice(0,12);
+  renderTray();
+}
+function renderTray(){
+  const L=tray.last;
+  const legend=`<div class="legend"><span><i class="mini-die" style="color:#f4f1e6">${FACE_SVG.hit}</i>Hit 1</span><span><i class="mini-die" style="color:#f4f1e6">${FACE_SVG.ace}</i>Ace 2</span><span><i class="mini-die" style="color:#f4f1e6">${FACE_SVG.spur}</i>Spur 0</span><span><i class="mini-die"></i>Blank 0</span><span><i style="width:7px;height:7px;border-radius:50%;background:#7fd3a6;display:inline-block"></i>Rerolled</span></div>`;
+  if(!L){$("#tray").innerHTML=`<div class="tray-in"><span class="tlabel">Dice tray</span><span class="note">Tap any Roll button on a sheet. Results show here.</span>${legend}</div>`;return}
+  const dice=L.res?`<div class="dice-row">${L.res.dice.map(d=>`<span class="die ${d.c}${d.rr?" rr":""}" title="${FACE_NAME[d.f]}" style="color:${d.c==="g"?"#2a2108":"#f4f1e6"}">${FACE_SVG[d.f]}</span>`).join("")}</div>`:"";
+  const hist=tray.open?`<div class="history">${tray.history.map(h=>`<div><span class="tlabel">${esc(h.charName)}</span> ${esc(h.label)}${h.hits!=null?` — <b>${h.hits} Hit${h.hits===1?"":"s"}</b>`:""} <span style="opacity:.7">${esc(h.note)}</span></div>`).join("")}</div>`:"";
+  $("#tray").innerHTML=`<div class="tray-in">
+    <div style="min-width:0"><div class="tlabel">${esc(L.charName)}${L.charName?" · ":""}${esc(L.label)}</div>${L.res?`<div class="total tabnum">${L.res.hits} Hit${L.res.hits===1?"":"s"}</div>`:""}</div>
+    ${dice}
+    <div class="note" style="flex:1;min-width:160px">${esc(L.note)}</div>
+    <button class="btn sm" data-action="tray-toggle" style="background:transparent;color:inherit;border-color:rgba(255,255,255,.3)">${tray.open?"Hide":"History"}</button>
+    ${tray.open?legend:""}${hist}</div>`;
+}
+
+/* ======================= STORE ======================= */
+let db=null, mode="loading", chars={}, order=[], pending={}, flushTimer=null;
+const LS="wiw-posse-ledger-site";
+function lsRead(){try{return JSON.parse(localStorage.getItem(LS)||"{}")}catch(e){return {}}}
+function lsWrite(o){try{localStorage.setItem(LS,JSON.stringify(o))}catch(e){}}
+function ingest(map){
+  chars={};
+  for(const id in map){const c=clone(map[id]);if(pending[id])deepMerge(c,pending[id]);chars[id]=c}
+  order=Object.keys(chars).sort((a,b)=>(chars[a].createdAt||0)-(chars[b].createdAt||0));
+  requestRender();
+}
+let connState="connecting";
+function flatten(o,prefix="",out={}){for(const k in o){const v=o[k],p=prefix?prefix+"."+k:k;if(v&&typeof v==="object"&&!Array.isArray(v)&&Object.keys(v).length)flatten(v,p,out);else out[p]=v}return out}
+async function initStore(){
+  try{
+    if(!window.firebase)throw new Error("sdk");
+    firebase.initializeApp(firebaseConfig);
+    const fs=firebase.firestore();
+    db={
+      collection:n=>fs.collection(n),
+      doc:p=>fs.doc(p),
+    };
+    mode="shared";
+    fs.collection("characters").onSnapshot({includeMetadataChanges:true},snap=>{
+      const map={};snap.docs.forEach(d=>{map[d.id]=d.data()});
+      const prev=connState;connState=snap.metadata.fromCache?"offline":"live";
+      ingest(map);if(prev!==connState)requestRender();
+    },err=>{console.error(err);connState="error";mode="error";requestRender()});
+    setTimeout(()=>{if(connState==="connecting"){connState="offline";requestRender()}},8000);
+  }catch(e){
+    mode="local";connState="local";ingest(lsRead());
+  }
+}
+function save(id,path,value){
+  const c=chars[id];if(!c)return;
+  setPath(c,path,value);
+  pending[id]=deepMerge(pending[id]||{},pathObj(path,value));
+  clearTimeout(flushTimer);flushTimer=setTimeout(flush,350);
+}
+function saveMany(id,obj){for(const p in obj)save(id,p,obj[p])}
+async function flush(){
+  const batch=pending;pending={};
+  for(const id in batch){
+    batch[id].updatedAt=Date.now();
+    if(mode==="shared"){try{await db.doc("characters/"+id).update(flatten(batch[id]))}catch(e){console.error(e);connState="error";requestRender()}}
+    else{const all=lsRead();if(all[id]){deepMerge(all[id],batch[id]);lsWrite(all)}}
+  }
+}
+async function createChar(c){
+  if(mode==="shared"){const ref=db.collection("characters").doc();c.id=ref.id;chars[c.id]=c;order.push(c.id);ref.set(c).catch(e=>{console.error(e);connState="error";requestRender()});return c.id}
+  c.id=uid();const all=lsRead();all[c.id]=c;lsWrite(all);ingest(all);return c.id;
+}
+async function deleteChar(id){
+  delete chars[id];order=order.filter(x=>x!==id);
+  if(mode==="shared"){try{await db.doc("characters/"+id).delete()}catch(e){}}
+  else{const all=lsRead();delete all[id];lsWrite(all)}
+  requestRender();
+}
+
+/* ======================= DERIVED ======================= */
+const trade=c=>TRADES[c.trade];
+function effMax(c){return 10+(c.improveHealth||0)+(c.wellFed?1:0)-(c.lasting?.burned?2:0)}
+function hasTalent(c,t){return (c.talents||[]).includes(t)}
+function skillPool(c,k,{relieving}={}){
+  const s=c.skills[k];let p={b:s.b,g:s.g},notes=[];
+  let pen=0;
+  if((c.statuses?.poisoned||0)>0&&relieving!=="poisoned"){pen=2;notes.push("−2 Poisoned")}
+  else if(c.lasting?.poisoned&&!(relieving==="poisoned"&&(c.statuses?.poisoned||0)>0)){pen=1;notes.push("−1 lingering poison")}
+  for(let i=0;i<pen;i++){if(p.b>0)p.b--;else if(p.g>0)p.g--}
+  return {p,notes};
+}
+function newChar(){
+  return {name:"",player:"",trade:"",tier:0,createdAt:Date.now(),
+    skills:{charm:{b:3,g:0},finesse:{b:3,g:0},intuition:{b:3,g:0},nerve:{b:3,g:0}},
+    current:10,improveHealth:0,wellFed:false,masterCount:0,
+    grit:6,gritMax:6,foolUsed:false,inCombat:false,aceCount:0,aimPending:0,
+    statuses:{afraid:0,burned:0,dazed:0,electrocuted:0,poisoned:0,trapped:0,unconscious:0},
+    lasting:{burned:false,poisoned:false},bleedUsed:[],dead:false,
+    unlocked:[],uses:{},talents:[],prestige:{total:0,unclaimed:0},
+    weapons:[],items:[],keepsakes:[],packs:[],supplies:{slots:1,used:0},wallet:0,scrap:0,
+    disposition:"",history:"",appearance:"",horse:"",notes:""};
+}
+
+/* ======================= VIEW STATE ======================= */
+let view={name:"roster",id:null,step:0,draft:null,confirmDel:null,addWeapon:false,campfire:false,spend:null};
+let renderQueued=false;
+function requestRender(){
+  const a=document.activeElement;
+  if(a&&a.matches&&a.matches("input[type=text],textarea,input[type=number]")&&a.closest("#app")){renderQueued=true;return}
+  render();
+}
+document.addEventListener("focusout",()=>{if(renderQueued){renderQueued=false;setTimeout(()=>{const a=document.activeElement;if(!(a&&a.matches&&a.matches("input[type=text],textarea,input[type=number]")))render();else renderQueued=true},0)}});
+
+function render(){
+  const app=$("#app");
+  let html=masthead();
+  if(mode==="loading")html+=`<div class="empty"><h2>Loading the posse…</h2></div>`;
+  else if(view.name==="roster")html+=rosterView();
+  else if(view.name==="create")html+=createView();
+  else if(view.name==="sheet"&&chars[view.id])html+=sheetView(chars[view.id]);
+  else{view.name="roster";html+=rosterView()}
+  app.innerHTML=html;
+}
+function connPill(){
+  const m={connecting:["","Connecting…"],live:["sage","● Live"],offline:["brass","Offline — will sync"],error:["rust","Sync problem"],local:["rust","This device only"]}[connState]||["",""];
+  return `<span class="pill ${m[0]}" title="Shared sheet connection">${m[1]}</span>`;
+}
+function masthead(){
+  const back=view.name!=="roster"?`<button class="btn" data-action="go-roster">← Posse</button>`:"";
+  return `<div class="mast"><div><div class="sub">Wild Imaginary West</div><h1>Posse Ledger</h1></div><div class="row">${connPill()}${back}</div></div>`+
+   (mode==="local"?`<div class="banner" style="margin-bottom:14px">Couldn't load the shared database, so sheets are saving on this device only. Check your connection and reload.</div>`:"")+
+   (connState==="error"?`<div class="banner" style="margin-bottom:14px;border-color:var(--rust);background:var(--rust-soft)">The database refused a save or read. Check the Firestore Rules tab (they should allow the characters collection), then reload.</div>`:"");
+}
+
+/* ----------------------- ROSTER ----------------------- */
+function rosterView(){
+  const cards=order.map(id=>{
+    const c=chars[id],t=trade(c),mx=effMax(c),pct=clamp(c.current/mx*100,0,100);
+    const sts=STATUSES.filter(s=>(c.statuses?.[s.k]||0)>0).map(s=>`<span class="pill rust">${s.n} ${c.statuses[s.k]}</span>`).join("");
+    const state=c.dead?`<span class="pill rust">Dead</span>`:c.current<=0?`<span class="pill rust">Bleeding out</span>`:"";
+    return `<button class="char-card" data-action="open" data-id="${id}">
+      <div class="spread"><span class="lbl">${esc(t?t.n:"No trade")} · ${PRESTIGE_TITLE(c.prestige?.total||0)}</span>${c.inCombat?'<span class="pill brass">In combat</span>':""}</div>
+      <div class="name">${esc(c.name||"Unnamed")}</div>
+      ${c.player?`<div class="muted small">Played by ${esc(c.player)}</div>`:""}
+      <div><div class="spread small"><span class="lbl">Health</span><span class="tabnum"><b>${c.current}</b> / ${mx}</span></div><div class="hpbar ${pct<=30?"low":""}"><i style="width:${pct}%"></i></div></div>
+      <div class="row" style="gap:5px">${state}${sts}<span class="pill">$${(+c.wallet||0).toFixed(2)}</span><span class="pill">${c.prestige?.total||0} Prestige</span></div>
+    </button>`}).join("");
+  return `<div class="spread" style="margin-bottom:14px"><div><h2>The posse</h2><p class="muted small" style="margin:4px 0 0">Everyone with this link sees and updates the same sheets live.</p></div><button class="btn primary" data-action="new">+ New character</button></div>
+   ${order.length?`<div class="roster">${cards}</div>`:`<div class="empty"><h2>No one has ridden in yet</h2><p class="muted" style="max-width:52ch;margin:0">Each player makes their own character: pick a Trade, split 12 dice across the four skills, grab a pack, and you're on the sheet. The Warden can watch everyone's Health and statuses from here.</p><button class="btn primary" data-action="new">+ Make the first character</button></div>`}`;
+}
+
+/* ----------------------- CREATOR ----------------------- */
+const STEPS=["Trade","Who you are","Skills","Gear","Review"];
+function createView(){
+  const d=view.draft,s=view.step;
+  const steps=`<div class="steps">${STEPS.map((n,i)=>`<span class="${i===s?"on":i<s?"done":""}">${i+1}. ${n}</span>`).join("")}</div>`;
+  let body="";
+  if(s===0)body=stepTrade(d);
+  if(s===1)body=stepWho(d);
+  if(s===2)body=stepSkills(d);
+  if(s===3)body=stepGear(d);
+  if(s===4)body=stepReview(d);
+  const can=stepValid(d,s);
+  const nav=`<div class="spread" style="margin-top:18px"><button class="btn" data-action="step" data-d="-1" ${s===0?"disabled":""}>Back</button>
+    <div class="row"><span class="muted small">${can.ok?"":esc(can.msg)}</span>${s<4?`<button class="btn primary" data-action="step" data-d="1" ${can.ok?"":"disabled"}>Next</button>`:`<button class="btn brass" data-action="finish">Ride out</button>`}</div></div>`;
+  return `<h2 style="margin-bottom:4px">New character</h2>${steps}${body}${nav}`;
+}
+function stepValid(d,s){
+  if(s===0&&!d.trade)return{ok:false,msg:"Pick a Trade to continue."};
+  if(s===1&&!d.name.trim())return{ok:false,msg:"Give your character a name."};
+  if(s===2){const left=12-SKILLS.reduce((a,k)=>a+d.skills[k].b,0);if(left!==0)return{ok:false,msg:left>0?`${left} dice left to place.`:`${-left} dice over.`}}
+  if(s===3&&d.packs.length!==TIERS[d.tier].packs)return{ok:false,msg:`Choose ${TIERS[d.tier].packs} equipment pack${TIERS[d.tier].packs>1?"s":""}.`};
+  return{ok:true};
+}
+function stepTrade(d){
+  return `<div class="trade-grid">${Object.entries(TRADES).map(([k,t])=>{
+    const st=t.ab.find(a=>a.start&&!a.aith),ai=t.ab.find(a=>a.aith===1);
+    return `<button class="trade ${d.trade===k?"sel":""}" data-action="pick-trade" data-k="${k}">
+      <span class="lbl">${t.role}</span><span class="tname">${t.n}</span><span class="small muted">${t.tag}</span>
+      <span class="ab"><b>Starts with: ${st.n}</b><br>${esc(st.d)}</span>
+      <span class="ab"><b>Ace-in-the-Hole: ${ai.n}</b><br>${esc(ai.d)}</span>
+      ${k==="prospector"?`<span class="pill brass" style="white-space:normal">Starts with no explosives — ask the Warden</span>`:""}
+      ${k==="doctor"?`<span class="pill sage" style="white-space:normal">Take the Pathfinder's Pack for healing items</span>`:""}
+    </button>`}).join("")}</div>`;
+}
+function stepWho(d){
+  const tierOpts=TIERS.map((t,i)=>`<option value="${i}" ${d.tier==i?"selected":""}>${t.name} (${t.p} Prestige)</option>`).join("");
+  return `<div class="stack">
+   <div class="two"><div class="field"><label class="lbl" for="d-name">Character name</label><input type="text" id="d-name" data-draft="name" value="${esc(d.name)}" placeholder="e.g. Ezekiel “Zeke” Harlan"></div>
+   <div class="field"><label class="lbl" for="d-player">Played by</label><input type="text" id="d-player" data-draft="player" value="${esc(d.player)}" placeholder="Your name"></div></div>
+   <div class="field" style="max-width:420px"><label class="lbl" for="d-tier">Starting Prestige tier</label><select id="d-tier" data-draft-num="tier">${tierOpts}</select><span class="muted small">Most groups start as a Tenderfoot. Use a higher tier only if your Warden says so.</span></div>
+   <div class="card"><h3 style="margin-bottom:6px">What're you after?</h3><ul class="prompts"><li>What happened that you hope to resolve in the West?</li><li>What causes you immediate worry?</li><li>Any ties to Factions or other groups?</li><li>What do you hope to accomplish? Any quirks? Anything you won't do?</li><li>How do you know the rest of the posse, and if you don't, what keeps you around?</li></ul></div>
+   <div class="field"><label class="lbl" for="d-disp">Disposition</label><textarea id="d-disp" data-draft="disposition" placeholder="Temperament, wishes and worries">${esc(d.disposition)}</textarea></div>
+   <div class="field"><label class="lbl" for="d-hist">History</label><textarea id="d-hist" data-draft="history" placeholder="Where you came from and why you rode west">${esc(d.history)}</textarea></div>
+   <div class="field"><label class="lbl" for="d-app">Appearance</label><textarea id="d-app" data-draft="appearance" placeholder="What's the first thing a stranger notices?">${esc(d.appearance)}</textarea></div>
+  </div>`;
+}
+function stepSkills(d){
+  const used=SKILLS.reduce((a,k)=>a+d.skills[k].b,0),left=12-used;
+  return `<div class="card stack">
+   <div class="spread"><div><h3>Split 12 Black dice</h3><p class="muted small" style="margin:2px 0 0">1 to 6 dice per skill. Each die is one die you roll.</p></div>
+    <div class="row"><span class="pill ${left===0?"sage":"brass"} tabnum">${left} left</span><button class="btn sm" data-action="quickbuild">Quick build 4·3·3·2</button></div></div>
+   <div class="skill-alloc">${SKILLS.map(k=>{const n=d.skills[k].b;return `<div class="srow">
+     <div><div style="font-family:var(--display);font-weight:800;font-size:20px;text-transform:uppercase">${SKILL_LABEL[k]}</div><div class="muted small">${SKILL_USE[k]}</div></div>
+     <div class="row" style="gap:6px"><button class="icon-btn" data-action="alloc" data-k="${k}" data-d="-1" aria-label="Less ${SKILL_LABEL[k]}">−</button><b class="tabnum" style="font-size:20px;min-width:16px;text-align:center">${n}</b><button class="icon-btn" data-action="alloc" data-k="${k}" data-d="1" aria-label="More ${SKILL_LABEL[k]}">+</button></div>
+     <div class="hint row" style="gap:8px"><span class="dicecount">${"<i class='dchip b'></i>".repeat(n)}</span><span class="small ${n<=1?"":"muted"}" style="${n<=1?"color:var(--rust)":""}">Bleeding Out save ${survive(n,0)}%</span></div></div>`}).join("")}</div>
+   <p class="muted small" style="margin:0">If you hit 0 Health you roll each skill in turn to stay alive, so a skill at 1 is a coin flip on dying.</p>
+  </div>`;
+}
+function stepGear(d){
+  const tier=TIERS[d.tier];
+  const packs=PACKS.map(p=>`<button class="choice ${d.packs.includes(p.name)?"sel":""}" data-action="pick-pack" data-n="${esc(p.name)}"><b>${p.name}</b>${p.items.join(", ")}${p.tip?`<div style="color:var(--sage);margin-top:4px;font-weight:600">${p.tip}</div>`:""}</button>`).join("");
+  const keeps=KEEPSAKES.map(k=>`<button class="choice ${d.keepsakes.includes(k)?"sel":""}" data-action="pick-keep" data-n="${esc(k)}">${esc(k)}</button>`).join("");
+  let weaponPick="";
+  if(d.tier>0){
+    const opt=(kind,max)=>CATALOG.filter(w=>(kind==="melee"?w.cat==="Melee weapons":w.cat!=="Melee weapons")&&QRANK[w.quality]<=QRANK[max]&&w.name!=="Fists").map(w=>`<option value="${esc(w.name)}" ${d[kind+"Pick"]===w.name?"selected":""}>${esc(w.name)} — ${w.quality}</option>`).join("");
+    weaponPick=`<div class="card stack"><h3>Starting weapons (${tier.name})</h3><div class="two">
+      <div class="field"><label class="lbl" for="d-ranged">Ranged, up to ${tier.ranged}</label><select id="d-ranged" data-draft="rangedPick"><option value="">Choose…</option>${opt("ranged",tier.ranged)}</select></div>
+      <div class="field"><label class="lbl" for="d-melee">Melee, up to ${tier.melee}</label><select id="d-melee" data-draft="meleePick"><option value="">Choose…</option>${opt("melee",tier.melee)}</select></div></div>
+      <p class="muted small" style="margin:0">Also starts with ${tier.scrap} Scrap and ${tier.items} extra inventory item${tier.items===1?"":"s"} (add them on your sheet).</p></div>`;
+  }
+  const cashNote=d.tier===0?"Roll 6 Black dice: Ace $2, Hit $1.":`The tier table lists $${tier.cash}. Roll instead if your Warden prefers.`;
+  return `<div class="stack">
+   ${d.tier===0?`<div class="card"><h3>Starting weapons</h3><p class="small" style="margin:6px 0 0">Used Pistol (2 Grit · 1B Arm's Reach · 2B Short) and a Pocket Knife (2 Grit · 1G Arm's Reach · 1B thrown at Short).${d.trade==="mechanic"?" Plus your Mechanic's Gauntlet (2 Grit · 2G).":""}</p></div>`:weaponPick}
+   <div><div class="spread" style="margin-bottom:8px"><h3>Equipment pack</h3><span class="muted small">Pick ${tier.packs}</span></div><div class="choice-grid">${packs}</div></div>
+   <div><div class="spread" style="margin-bottom:8px"><h3>Keepsakes</h3><span class="muted small">Pick one or two, or write your own</span></div><div class="choice-grid">${keeps}</div>
+    <div class="row" style="margin-top:8px"><input type="text" id="d-keep" placeholder="Your own keepsake" style="flex:1;min-width:200px"><button class="btn sm" data-action="add-keep">Add</button></div>
+    ${d.keepsakes.filter(k=>!KEEPSAKES.includes(k)).map(k=>`<span class="pill brass" style="margin:6px 6px 0 0">${esc(k)} <button data-action="pick-keep" data-n="${esc(k)}" style="border:0;background:none;padding:0 0 0 4px" aria-label="Remove">×</button></span>`).join("")}</div>
+   <div class="card"><div class="spread"><div><h3>Wallet</h3><p class="muted small" style="margin:2px 0 0">${cashNote}</p></div><div class="row"><b class="tabnum" style="font-family:var(--display);font-size:32px">$${d.wallet}</b><button class="btn brass" data-action="roll-wallet">Roll 6B</button>${d.tier>0?`<button class="btn" data-action="tier-cash">Use $${tier.cash}</button>`:""}</div></div></div>
+  </div>`;
+}
+function stepReview(d){
+  const t=TRADES[d.trade];
+  return `<div class="card stack"><div><span class="lbl">${t.n} · ${TIERS[d.tier].name}</span><h2 style="font-size:34px">${esc(d.name)}</h2>${d.player?`<span class="muted">Played by ${esc(d.player)}</span>`:""}</div>
+   <div class="row">${SKILLS.map(k=>`<span class="pill">${SKILL_LABEL[k]} ${d.skills[k].b}B</span>`).join("")}</div>
+   <p class="small" style="margin:0"><b>Health</b> 10 · <b>Wallet</b> $${d.wallet} · <b>Packs</b> ${d.packs.join(", ")} · <b>Keepsakes</b> ${d.keepsakes.map(esc).join("; ")||"none"}</p>
+   <p class="small" style="margin:0"><b>Abilities:</b> ${t.ab.filter(a=>a.start).map(a=>a.n).join(" and ")}</p>
+   ${d.tier>0?`<p class="small" style="margin:0"><b>${TIERS[d.tier].p} Prestige</b> to spend on your sheet.</p>`:""}
+  </div>`;
+}
+
+/* ----------------------- SHEET ----------------------- */
+function sheetView(c){
+  const t=trade(c),mx=effMax(c),pct=clamp(c.current/mx*100,0,100);
+  const title=PRESTIGE_TITLE(c.prestige.total);
+  const head=`<div class="sheet-head"><div class="spread"><div><span class="lbl">${t.n} · ${title} · ${c.prestige.total} Prestige</span><h1 style="font-size:clamp(34px,6vw,52px)">${esc(c.name||"Unnamed")}</h1>${c.player?`<span class="muted">Played by ${esc(c.player)}</span>`:""}</div>
+    <div class="row"><button class="btn ${c.inCombat?"brass":""}" data-action="combat">${c.inCombat?"End combat":"Start combat"}</button></div></div></div>`;
+  return head+`<div class="sheet-grid"><div class="stack">${vitalsCard(c,mx,pct)}${c.inCombat?combatCard(c):""}${skillsCard(c)}${statusCard(c)}${restCard(c)}</div>
+   <div class="stack">${abilitiesCard(c)}${weaponsCard(c)}${inventoryCard(c)}${prestigeCard(c)}${storyCard(c)}${customRollCard(c)}${dangerCard(c)}</div></div>`;
+}
+function vitalsCard(c,mx,pct){
+  let bleed="";
+  if(c.dead)bleed=`<div class="dead"><h2>${esc(c.name)} has died</h2><p class="muted small" style="margin:0">Describe their last thoughts. The Warden can undo this if it was a mistake.</p><div><button class="btn sm" data-action="undead">Undo</button></div></div>`;
+  else if(c.current<=0){
+    const used=c.bleedUsed||[];
+    bleed=`<div class="bleed"><div class="spread"><h3 style="color:var(--rust)">Bleeding out</h3><span class="small">Skills used: ${used.length}/4</span></div>
+     <p class="small" style="margin:0">At the end of each ally's turn, roll a skill you haven't used yet. No Hit and you die. Only a teammate's First Aid saves you.</p>
+     <div class="row">${SKILLS.map(k=>`<button class="btn sm ${used.includes(k)?"":"danger"}" data-action="bleed-roll" data-k="${k}" ${used.includes(k)?"disabled":""}>${SKILL_LABEL[k]} ${skillTotal(c.skills[k])}</button>`).join("")}</div>
+     <div><button class="btn sm" data-action="revive">Saved with First Aid → Unconscious 5</button></div></div>`;
+  }
+  return `<div class="card stack"><div class="vitals">
+    <div><div class="lbl">Health</div><div class="hp-big">${c.current}<small> / ${mx}</small></div></div>
+    <div class="stack" style="gap:8px"><div class="hpbar ${pct<=30?"low":""}" style="height:12px"><i style="width:${pct}%"></i></div>
+     <div class="row"><button class="btn" data-action="hp" data-d="-1">−1</button><button class="btn" data-action="hp" data-d="-3">−3</button><button class="btn" data-action="hp" data-d="1">+1</button><button class="btn" data-action="hp" data-d="3">+3</button></div>
+     <div class="row small"><label class="row" style="gap:6px"><input type="checkbox" data-action="wellfed" ${c.wellFed?"checked":""}> Well fed (+1 max today)</label>${c.lasting.burned?'<span class="pill rust">Burn: max −2</span>':""}</div></div></div>${bleed}</div>`;
+}
+function combatCard(c){
+  const pips=Array.from({length:c.gritMax},(_,i)=>`<span class="pip ${i<c.grit?"full":""}"></span>`).join("");
+  const aces=Array.from({length:6},(_,i)=>`<i class="${i<c.aceCount?"on":""}"></i>`).join("");
+  const dodgeOk=c.grit>0&&!(c.statuses.electrocuted>0)&&!(c.statuses.trapped>0);
+  return `<div class="combat-strip">
+   <div class="spread"><div><div class="lbl">Grit this turn</div><div class="row" style="gap:10px"><div class="pips">${pips}</div><b class="tabnum">${c.grit}/${c.gritMax}</b></div></div>
+    <div class="row"><button class="btn sm" data-action="grit" data-d="-1">Spend 1</button><button class="btn sm primary" data-action="newturn">New turn</button></div></div>
+   <div class="row">
+    <button class="btn sm" data-action="initiative">Roll turn order (Finesse)</button>
+    <button class="btn sm" data-action="aim" ${c.grit<1||c.statuses.electrocuted>0?"disabled":""}>${c.aimPending?"Aim ready ✓":"Aim (1 Grit)"}</button>
+    <button class="btn sm" data-action="dodge" ${dodgeOk?"":"disabled"}>Dodge with ${c.grit} Grit</button>
+    <button class="btn sm" data-action="fool" ${c.foolUsed||c.current<=1?"disabled":""}>Fool's Grit (+1 Grit, −1 HP)</button>
+    ${c.statuses.dazed>0?`<button class="btn sm danger" data-action="dazecheck">Dazed check (1B)</button>`:""}
+    <label class="row small" style="gap:6px">Max Grit <input type="number" data-num="gritMax" value="${c.gritMax}" min="1" max="12" style="width:64px"></label>
+   </div>
+   <div class="spread"><div><div class="lbl">Ace-in-the-Hole · Aces this fight</div><div class="acebar">${aces}</div></div><span class="small muted">${c.aceCount>=6?"Ready! Use it from your abilities.":"Aces you roll here count automatically."}</span></div>
+  </div>`;
+}
+function skillsCard(c){
+  return `<div class="card"><h2>Skills</h2>${SKILLS.map(k=>{const s=c.skills[k];const {p,notes}=skillPool(c,k);
+    return `<div class="skill-row"><div><div class="sname">${SKILL_LABEL[k]}</div>${hasTalent(c,SKILL_LABEL[k])?'<span class="pill sage" style="margin-top:3px">Talent</span>':""}</div>
+     <div style="min-width:0"><div class="dicecount">${"<i class='dchip g'></i>".repeat(s.g)}${"<i class='dchip b'></i>".repeat(s.b)}</div><div class="muted small">${poolStr(s)}${notes.length?` · <span style="color:var(--rust)">${notes.join(", ")}</span>`:""}</div></div>
+     <button class="btn" data-action="roll-skill" data-k="${k}">Roll ${poolStr(p)}</button></div>`}).join("")}
+   <p class="muted small" style="margin:8px 0 0">Difficulty: Very Easy 1 · Easy 2 · Medium 3 · Difficult 4 · Very Difficult 5 Hits. A helper rolls half their dice and adds the Hits.</p></div>`;
+}
+function statusCard(c){
+  return `<div class="card"><h2>Statuses</h2>${STATUSES.map(s=>{const v=c.statuses[s.k]||0;const sk=s.sk.slice().sort((a,b)=>skillTotal(c.skills[b])-skillTotal(c.skills[a]))[0];
+    return `<div class="status-row ${v>0?"on":""}"><div style="min-width:0"><div class="stname">${s.n} <span class="muted small" style="text-transform:none;letter-spacing:0;font-weight:500">· clear with ${s.sk.map(x=>SKILL_LABEL[x]).join(" or ")}</span></div>
+      ${v>0?`<div class="small">${s.fx}</div>`:""}
+      ${s.lasting?`<label class="row small" style="gap:6px;margin-top:3px"><input type="checkbox" data-action="lasting" data-k="${s.k}" ${c.lasting[s.k]?"checked":""}> Lingering: ${s.lasting}</label>`:""}</div>
+     <div class="sev"><button class="icon-btn" data-action="sev" data-k="${s.k}" data-d="-1" aria-label="Lower ${s.n}">−</button><b>${v}</b><button class="icon-btn" data-action="sev" data-k="${s.k}" data-d="1" aria-label="Raise ${s.n}">+</button></div>
+     <button class="btn sm" data-action="relieve" data-k="${s.k}" data-sk="${sk}" ${v>0?"":"disabled"}>Clear</button></div>`}).join("")}
+   <p class="muted small" style="margin:8px 0 0">Clear rolls your skill dice (in combat, 1 Grit per die). Each Hit lowers severity by 1. One try per status per turn.</p></div>`;
+}
+function restCard(c){
+  return `<div class="card stack"><h2 style="margin:0">Rest</h2>
+   <div class="row"><span class="small" style="flex:1;min-width:180px"><b>Campfire</b> (a few hours): roll a skill, heal 1 per Hit. Resets Ace counter.</span>
+    ${SKILLS.map(k=>`<button class="btn sm" data-action="campfire" data-k="${k}">${SKILL_LABEL[k]}</button>`).join("")}</div>
+   <div class="row"><span class="small" style="flex:1;min-width:180px"><b>Town</b> (one night): full Health, clears every status and lingering effect, refills Supplies, resets 2/day abilities.</span><button class="btn sm primary" data-action="townrest">Rest in town</button></div>
+   <div class="row"><span class="small" style="flex:1;min-width:180px"><b>New day</b> without town: resets 2/day abilities and "well fed".</span><button class="btn sm" data-action="newday">New day</button></div></div>`;
+}
+function abilitiesCard(c){
+  const t=trade(c);
+  const list=t.ab.map(a=>{
+    const on=c.unlocked.includes(a.id);
+    const used=c.uses[a.id]||0;
+    const day=a.day&&on?`<span class="uses small">2/day <input type="checkbox" data-action="use" data-id="${a.id}" data-i="1" ${used>=1?"checked":""} aria-label="Use 1"><input type="checkbox" data-action="use" data-id="${a.id}" data-i="2" ${used>=2?"checked":""} aria-label="Use 2"></span>`:"";
+    const aith=a.aith?`<span class="pill brass">Ace-in-the-Hole${a.aith===2?" 2":""}</span>`:"";
+    const actions=on?[a.aith?`<button class="btn sm brass" data-action="aith" data-id="${a.id}" ${c.aceCount>=6?"":"disabled"}>${c.aceCount>=6?"Use it":`Needs 6 Aces (${c.aceCount})`}</button>`:"",a.pool?`<button class="btn sm" data-action="ab-roll" data-id="${a.id}">Roll ${a.pool}</button>`:""].join(""):`<span class="pill">Locked</span>`;
+    return `<div class="ability ${on?"":"locked"}"><div class="spread"><span class="aname">${esc(a.n)}</span><span class="row" style="gap:6px">${aith}${day}</span></div><p>${esc(a.d)}</p>${actions?`<div class="row" style="gap:6px">${actions}</div>`:""}</div>`}).join("");
+  return `<div class="card"><div class="spread" style="margin-bottom:6px"><h2 style="margin:0">${t.n} abilities</h2><span class="muted small">${c.unlocked.length} of 8 unlocked</span></div>${list}</div>`;
+}
+function weaponsCard(c){
+  const rows=c.weapons.map((w,i)=>{
+    const rb=(rk,label)=>w[rk]?`<button class="poolbtn" data-action="attack" data-i="${i}" data-r="${rk}" title="Attack at ${label}">${esc(w[rk])}</button>`:'<span class="muted">—</span>';
+    return `<tr><td class="wname">${esc(w.name)}<div class="muted small">${esc(w.cat||"")}${w.note?" · "+esc(w.note):""}</div></td><td>${w.grit}</td><td>${rb("arm","Arm's Reach")}</td><td>${rb("short","Short Range")}</td><td>${rb("long","Long Range")}</td><td>${rb("distant","Distant")}</td><td><button class="icon-btn" data-action="del-weapon" data-i="${i}" aria-label="Remove ${esc(w.name)}">×</button></td></tr>`}).join("");
+  const add=view.addWeapon?`<div class="stack" style="margin-top:12px;border-top:1px solid var(--line);padding-top:12px">
+    <div class="field"><label class="lbl" for="w-cat">From the guidebook</label><div class="row"><select id="w-cat" style="flex:1;min-width:200px"><option value="">Choose a weapon…</option>${["Revolvers","Rifles","Shotguns","Bows","Melee weapons"].map(cat=>`<optgroup label="${cat}">${CATALOG.filter(w=>w.cat===cat).map(w=>`<option value="${esc(w.name)}">${esc(w.name)} — ${w.quality}, $${w.cost}</option>`).join("")}</optgroup>`).join("")}</select><button class="btn sm primary" data-action="add-catalog">Add</button></div></div>
+    <details><summary>Or enter a custom weapon</summary><div class="stack" style="margin-top:8px">
+     <div class="two"><input type="text" id="cw-name" placeholder="Name"><select id="cw-cat">${["Revolvers","Rifles","Shotguns","Bows","Melee weapons","Mounted weapons","Explosives","Traps"].map(x=>`<option>${x}</option>`).join("")}</select></div>
+     <div class="row"><input type="number" id="cw-grit" placeholder="Grit" style="width:80px"><input type="text" id="cw-arm" placeholder="Arm e.g. 1G" style="width:110px"><input type="text" id="cw-short" placeholder="Short e.g. 2B" style="width:110px"><input type="text" id="cw-long" placeholder="Long" style="width:90px"><input type="text" id="cw-distant" placeholder="Distant" style="width:90px"></div>
+     <div><button class="btn sm primary" data-action="add-custom">Add custom weapon</button></div></div></details>
+    <div><button class="btn sm" data-action="toggle-add">Done</button></div></div>`:`<div style="margin-top:10px"><button class="btn sm" data-action="toggle-add">+ Add weapon</button></div>`;
+  return `<div class="card"><h2>Weapons</h2><div class="tbl-wrap"><table><thead><tr><th>Weapon</th><th>Grit</th><th>Arm's</th><th>Short</th><th>Long</th><th>Distant</th><th></th></tr></thead><tbody>${rows||`<tr><td colspan="7" class="muted">No weapons yet.</td></tr>`}</tbody></table></div>
+   <p class="muted small" style="margin:8px 0 0">Tap a dice pool to attack at that range.${c.inCombat?" Spends the weapon's Grit.":""} Damage = Hits minus the target's Defense.</p>${add}</div>`;
+}
+function inventoryCard(c){
+  const items=c.items.map((it,i)=>`<div class="item"><input type="text" data-arr="items" data-i="${i}" value="${esc(it)}" aria-label="Item ${i+1}"><button class="icon-btn" data-action="del-item" data-i="${i}" aria-label="Remove">×</button></div>`).join("");
+  const sup=c.supplies;
+  return `<div class="card stack"><h2 style="margin:0">Inventory</h2>
+   <div class="row" style="gap:16px">
+    <label class="field" style="width:120px"><span class="lbl">Wallet $</span><input type="number" step="0.5" data-num="wallet" value="${c.wallet}"></label>
+    <label class="field" style="width:100px"><span class="lbl">Scrap</span><input type="number" data-num="scrap" value="${c.scrap}"></label>
+    <div class="field"><span class="lbl">Supplies slots</span><div class="row" style="gap:6px"><b class="tabnum">${sup.slots-sup.used} of ${sup.slots} left</b><button class="btn sm" data-action="supply-use" ${sup.used>=sup.slots?"disabled":""}>Use one</button><button class="icon-btn" data-action="supply-slots" data-d="-1" aria-label="Fewer slots">−</button><button class="icon-btn" data-action="supply-slots" data-d="1" aria-label="More slots">+</button></div></div>
+   </div>
+   <p class="muted small" style="margin:0">A Supplies slot lets you pull any simple item (rope, a torch, a hammer) from your pack in the moment. Each horse adds a slot. Town rest refills them.</p>
+   <div class="item-list">${items}</div>
+   <div class="row"><input type="text" id="new-item" placeholder="Add an item, e.g. Bandages ×2" style="flex:1;min-width:180px"><button class="btn sm" data-action="add-item">Add</button></div>
+   ${c.keepsakes.length?`<div><span class="lbl">Keepsakes</span><div class="small">${c.keepsakes.map(esc).join(" · ")}</div></div>`:""}
+   <label class="field"><span class="lbl">Horse or mech</span><input type="text" data-field="horse" value="${esc(c.horse)}" placeholder="Name, breed, bond"></label></div>`;
+}
+function prestigeCard(c){
+  const u=c.prestige.unclaimed;
+  const lockedRegular=trade(c).ab.filter(a=>!a.aith&&!c.unlocked.includes(a.id));
+  const allTal=TALENTS.flatMap(x=>x[1]).filter(x=>!hasTalent(c,x));
+  const opts=[
+   {k:"practice",cost:2,n:"Practice Skill",d:"Swap 1 Black die for 1 Gold on a skill.",pick:SKILLS.filter(k=>c.skills[k].b>0).map(k=>[k,SKILL_LABEL[k]])},
+   {k:"health",cost:2,n:"Improve Health",d:`+1 Max Health (${c.improveHealth}/5 used).`,ok:c.improveHealth<5},
+   {k:"talent",cost:4,n:"Develop Talent",d:"Reroll Spurs for one kind of roll.",pick:allTal.map(x=>[x,x])},
+   {k:"ability",cost:4,n:"Unlock Ability",d:"One more ability from your Trade.",pick:lockedRegular.map(a=>[a.id,a.n])},
+   {k:"master",cost:6,n:"Master Skill",d:`+1 Black die on a skill (${c.masterCount}/3 used).`,pick:SKILLS.map(k=>[k,SKILL_LABEL[k]]),ok:c.masterCount<3},
+   {k:"aith2",cost:6,n:"Ace-in-the-Hole 2",d:"Unlock your second Ace-in-the-Hole.",ok:!c.unlocked.includes("aith2")}];
+  const rows=opts.map(o=>{const can=u>=o.cost&&(o.ok!==false)&&(!o.pick||o.pick.length);
+    const sel=o.pick?`<select id="sp-${o.k}" style="width:auto;max-width:170px" ${can?"":"disabled"}>${o.pick.map(([v,l])=>`<option value="${esc(v)}">${esc(l)}</option>`).join("")}</select>`:"";
+    return `<div class="srow"><div class="cost">${o.cost}</div><div style="min-width:0"><b class="small" style="font-family:var(--label);text-transform:uppercase;letter-spacing:.05em;font-size:14px">${o.n}</b><div class="muted small">${o.d}</div></div><div class="row" style="gap:6px;justify-content:end">${sel}<button class="btn sm" data-action="spend" data-k="${o.k}" data-cost="${o.cost}" ${can?"":"disabled"}>Spend</button></div></div>`}).join("");
+  const tal=TALENTS.map(([g,list])=>`<div><div class="lbl" style="margin-bottom:4px">${g}</div><div class="talents">${list.map(x=>`<span class="talent ${hasTalent(c,x)?"on":""}">${x}</span>`).join("")}</div></div>`).join("");
+  return `<div class="card stack"><div class="spread"><h2 style="margin:0">Prestige</h2><span class="pill brass">${PRESTIGE_TITLE(c.prestige.total)}</span></div>
+   <div class="row" style="gap:18px"><div><div class="lbl">Total</div><b class="tabnum" style="font-family:var(--display);font-size:34px">${c.prestige.total}</b></div><div><div class="lbl">To spend</div><b class="tabnum" style="font-family:var(--display);font-size:34px;color:var(--brass)">${u}</b></div>
+    <div class="row" style="gap:6px"><input type="number" id="earn" value="1" min="1" style="width:70px" aria-label="Prestige earned"><button class="btn sm" data-action="earn">Earn</button><button class="btn sm brass" data-action="jackpot" title="The posse voted you a bonus point">Jackpot! +1</button></div></div>
+   <div class="spend">${rows}</div>
+   <div class="stack" style="gap:8px">${tal}</div></div>`;
+}
+function storyCard(c){
+  const f=(k,l,ph)=>`<label class="field"><span class="lbl">${l}</span><textarea data-field="${k}" placeholder="${ph}">${esc(c[k])}</textarea></label>`;
+  return `<div class="card stack"><h2 style="margin:0">Story</h2>
+   <div class="two"><label class="field"><span class="lbl">Name</span><input type="text" data-field="name" value="${esc(c.name)}"></label><label class="field"><span class="lbl">Played by</span><input type="text" data-field="player" value="${esc(c.player)}"></label></div>
+   ${f("disposition","Disposition","Wishes and worries")}${f("history","History","Where you came from")}${f("appearance","Appearance","First thing a stranger notices")}${f("notes","Session notes","Leads, debts, grudges, reputations with Factions")}</div>`;
+}
+function customRollCard(c){
+  return `<div class="card"><h2>Any roll</h2><div class="row"><label class="row small" style="gap:6px">Black <input type="number" id="cr-b" value="2" min="0" max="20" style="width:64px"></label><label class="row small" style="gap:6px">Gold <input type="number" id="cr-g" value="0" min="0" max="20" style="width:64px"></label><label class="row small" style="gap:6px"><input type="checkbox" id="cr-t"> Reroll Spurs</label><button class="btn primary" data-action="custom-roll">Roll</button></div>
+   <p class="muted small" style="margin:8px 0 0">For items, traps and anything the Warden asks for.</p></div>`;
+}
+function dangerCard(c){
+  return `<div class="row" style="justify-content:end">${view.confirmDel===c.id?`<span class="confirm"><span class="small">Delete ${esc(c.name||"this character")} for everyone?</span><button class="btn sm danger" data-action="delete-yes">Delete</button><button class="btn sm" data-action="delete-no">Keep</button></span>`:`<button class="btn sm danger" data-action="delete-ask">Delete character</button>`}</div>`;
+}
+
+/* ======================= ACTIONS ======================= */
+function cur(){return chars[view.id]}
+function addAces(c,res){if(c.inCombat&&res.aces){save(c.id,"aceCount",clamp(c.aceCount+res.aces,0,6))}}
+function spendGrit(c,n){if(!c.inCombat)return true;if(c.grit<n)return false;save(c.id,"grit",c.grit-n);return true}
+
+document.addEventListener("click",async e=>{
+  const el=e.target.closest("[data-action]");if(!el)return;
+  const a=el.dataset.action;
+  if(el.type==="checkbox"&&!["wellfed","lasting","use"].includes(a))return;
+  const c=cur();
+  switch(a){
+  case "tray-toggle":tray.open=!tray.open;renderTray();return;
+  case "go-roster":view={name:"roster"};break;
+  case "open":view={name:"sheet",id:el.dataset.id};window.scrollTo(0,0);break;
+  case "new":view={name:"create",step:0,draft:Object.assign(newChar(),{packs:[],rangedPick:"",meleePick:""})};window.scrollTo(0,0);break;
+  case "pick-trade":view.draft.trade=el.dataset.k;break;
+  case "step":{view.step=clamp(view.step+(+el.dataset.d),0,4);window.scrollTo(0,0);break}
+  case "alloc":{const s=view.draft.skills[el.dataset.k];const used=SKILLS.reduce((x,k)=>x+view.draft.skills[k].b,0);const d=+el.dataset.d;if(d>0&&used>=12)return;s.b=clamp(s.b+d,1,6);break}
+  case "quickbuild":{const d=view.draft;["charm","finesse","intuition","nerve"].forEach(k=>d.skills[k].b=3);
+    const best={doctor:["intuition","charm"],gunslinger:["finesse","charm"],hunter:["intuition","charm"],marshal:["charm","finesse"],mechanic:["finesse","charm"],prospector:["nerve","charm"],trapper:["finesse","charm"]}[d.trade]||["finesse","charm"];
+    d.skills[best[0]].b=4;d.skills[best[1]].b=2;break}
+  case "pick-pack":{const d=view.draft,n=el.dataset.n,max=TIERS[d.tier].packs;if(d.packs.includes(n))d.packs=d.packs.filter(x=>x!==n);else{if(d.packs.length>=max)d.packs.shift();d.packs.push(n)}break}
+  case "pick-keep":{const d=view.draft,n=el.dataset.n;d.keepsakes=d.keepsakes.includes(n)?d.keepsakes.filter(x=>x!==n):[...d.keepsakes,n];break}
+  case "add-keep":{const v=$("#d-keep").value.trim();if(v&&!view.draft.keepsakes.includes(v))view.draft.keepsakes.push(v);break}
+  case "roll-wallet":{const r=rollDice({b:6,g:0});view.draft.wallet=r.hits;showRoll("Starting wallet",r,`$${r.hits} in your wallet`,view.draft.name);break}
+  case "tier-cash":view.draft.wallet=TIERS[view.draft.tier].cash;break;
+  case "finish":await finishCreate();return;
+  // sheet
+  case "combat":saveMany(c.id,c.inCombat?{inCombat:false,grit:c.gritMax,aimPending:0,foolUsed:false}:{inCombat:true,grit:c.gritMax,aceCount:0,foolUsed:false,aimPending:0});break;
+  case "hp":{const v=clamp(c.current+(+el.dataset.d),0,effMax(c));save(c.id,"current",v);if(v>0&&(c.bleedUsed||[]).length)save(c.id,"bleedUsed",[]);break}
+  case "wellfed":{save(c.id,"wellFed",el.checked);if(!el.checked)save(c.id,"current",Math.min(c.current,effMax(c)));else save(c.id,"current",c.current+1);break}
+  case "lasting":{save(c.id,"lasting."+el.dataset.k,el.checked);if(el.dataset.k==="burned")save(c.id,"current",el.checked?Math.min(c.current,effMax(c)):c.current);break}
+  case "sev":{const s=STATUSES.find(x=>x.k===el.dataset.k);const v=clamp((c.statuses[s.k]||0)+(+el.dataset.d),0,s.max||6);save(c.id,"statuses."+s.k,v);
+    if(+el.dataset.d>0&&s.lasting&&(c.statuses[s.k]-1)===0&&!c.lasting[s.k]){save(c.id,"lasting."+s.k,true);if(s.k==="burned")save(c.id,"current",Math.min(c.current,effMax(c)))}break}
+  case "relieve":{const k=el.dataset.k,sk=el.dataset.sk;const s=STATUSES.find(x=>x.k===k);
+    let {p,notes}=skillPool(c,sk,{relieving:k});
+    if(k==="trapped"&&c.unlocked.includes("escape"))p.g++,notes.push("+1G Escape Artist");
+    let n=p.b+p.g;if(c.inCombat){n=Math.min(n,c.grit);if(n<1){showRoll(`Clear ${s.n}`,null,"No Grit left this turn.",c.name);return}
+      while(p.b+p.g>n){if(p.b>0)p.b--;else p.g--}save(c.id,"grit",c.grit-n)}
+    const r=rollDice(p,{talent:hasTalent(c,SKILL_LABEL[sk])});addAces(c,r);
+    const nv=Math.max(0,(c.statuses[k]||0)-r.hits);save(c.id,"statuses."+k,nv);
+    let msg=nv===0?`${s.n} cleared!`:`${s.n} down to ${nv}.`;
+    if(k==="unconscious"&&nv===0&&c.current<=0){save(c.id,"current",1);msg+=" Back up with 1 Health."}
+    showRoll(`Clear ${s.n} · ${SKILL_LABEL[sk]} ${poolStr(p)}`,r,[msg,...notes].join(" "),c.name);break}
+  case "roll-skill":{const k=el.dataset.k;const {p,notes}=skillPool(c,k);const r=rollDice(p,{talent:hasTalent(c,SKILL_LABEL[k])});addAces(c,r);showRoll(`${SKILL_LABEL[k]} ${poolStr(p)}`,r,notes.join(", "),c.name);break}
+  case "initiative":{const {p}=skillPool(c,"finesse");const r=rollDice(p,{talent:hasTalent(c,"Finesse")});addAces(c,r);showRoll(`Turn order · Finesse ${poolStr(p)}`,r,"Most Hits goes first. Quick-Draw adds +2B.",c.name);break}
+  case "bleed-roll":{const k=el.dataset.k;const s=c.skills[k];const r=rollDice({b:s.b,g:s.g},{talent:hasTalent(c,SKILL_LABEL[k])});const used=[...(c.bleedUsed||[]),k];save(c.id,"bleedUsed",used);
+    let msg;if(r.hits<1){save(c.id,"dead",true);msg="No Hit. The reaper takes them."}else if(used.length>=4){save(c.id,"dead",true);msg="Survived the roll, but all four skills are spent."}else msg=`Hangs on until the next ally's turn. ${4-used.length} skill${4-used.length===1?"":"s"} left.`;
+    showRoll(`Bleeding out · ${SKILL_LABEL[k]} ${poolStr(s)}`,r,msg,c.name);break}
+  case "revive":saveMany(c.id,{"statuses.unconscious":5,bleedUsed:[]});showRoll("Revived",null,"Stabilized and Unconscious [5]. Clear it with Intuition to wake with 1 Health.",c.name);break;
+  case "undead":saveMany(c.id,{dead:false,bleedUsed:[]});break;
+  case "grit":save(c.id,"grit",clamp(c.grit+(+el.dataset.d),0,c.gritMax));break;
+  case "newturn":{saveMany(c.id,{grit:c.gritMax,foolUsed:false});const b=c.statuses.burned;if(b>0){save(c.id,"current",Math.max(0,c.current-b));showRoll("End of turn",null,`Burned: lost ${b} Health.`,c.name)}break}
+  case "fool":saveMany(c.id,{grit:c.grit+1,foolUsed:true,current:c.current-1});break;
+  case "aim":if(!c.aimPending&&spendGrit(c,1))save(c.id,"aimPending",1);break;
+  case "dodge":{const n=c.grit;save(c.id,"grit",0);const r=rollDice({b:n,g:0},{talent:hasTalent(c,"Defense")});addAces(c,r);showRoll(`Dodge ${n}B`,r,`Blocks ${r.hits} damage from the next attack before your turn.`,c.name);break}
+  case "dazecheck":{const r=rollDice({b:1,g:0});showRoll("Dazed check",r,r.hits?"You can act.":"The action fails; the Grit is spent.",c.name);break}
+  case "attack":{const w=c.weapons[+el.dataset.i],rk=el.dataset.r;let p=parsePool(w[rk]);const notes=[];
+    if(c.inCombat){if(!spendGrit(c,+w.grit||0)){showRoll(`${w.name}`,null,`Needs ${w.grit} Grit and you have ${c.grit}. Take a new turn or use Fool's Grit.`,c.name);return}}
+    if(c.statuses.electrocuted>0&&p.g){p.b+=p.g;p.g=0;notes.push("Electrocuted: Gold became Black")}
+    const aim=c.aimPending?1:0;if(aim){save(c.id,"aimPending",0);notes.push("Aimed: rerolled worst die")}
+    const tal=w.cat&&hasTalent(c,w.cat);const r=rollDice(p,{talent:tal,aim});addAces(c,r);
+    if(c.trade==="gunslinger"&&rk!=="arm")notes.push("Sharpshooter: ignore 1 Defense"+(c.unlocked.includes("sharp2")?" (2 with Sharpshooter 2)":""));
+    const rl={arm:"Arm's Reach",short:"Short",long:"Long",distant:"Distant"}[rk];
+    showRoll(`${w.name} · ${rl} ${poolStr(p)}`,r,notes.join(". "),c.name);break}
+  case "aith":{const ab=trade(c).ab.find(x=>x.id===el.dataset.id);save(c.id,"aceCount",0);
+    if(ab.pool){const r=rollDice(parsePool(ab.pool));showRoll(ab.n,r,"Ace counter reset.",c.name)}else showRoll(ab.n,null,"Used. Ace counter reset.",c.name);break}
+  case "ab-roll":{const ab=trade(c).ab.find(x=>x.id===el.dataset.id);const tal=ab.id==="digging"&&hasTalent(c,"Nerve");const r=rollDice(parsePool(ab.pool),{talent:tal});
+    let note="";if(ab.id==="digging"){save(c.id,"current",c.current+r.hits);note=`+${r.hits} Health (can exceed max today).`}
+    showRoll(ab.n,r,note,c.name);break}
+  case "use":{const id=el.dataset.id,i=+el.dataset.i;const u=c.uses[id]||0;save(c.id,"uses."+id,el.checked?Math.max(u,i):i-1);break}
+  case "campfire":{const k=el.dataset.k;const {p}=skillPool(c,k);const r=rollDice(p,{talent:hasTalent(c,SKILL_LABEL[k])});const v=Math.min(effMax(c),c.current+r.hits);saveMany(c.id,{current:v,aceCount:0});if(v>0)save(c.id,"bleedUsed",[]);showRoll(`Campfire rest · ${SKILL_LABEL[k]}`,r,`Healed to ${v}.`,c.name);break}
+  case "townrest":{const st={};STATUSES.forEach(s=>st["statuses."+s.k]=0);const uses={};Object.keys(c.uses).forEach(k=>uses["uses."+k]=0);
+    saveMany(c.id,{...st,...uses,"lasting.burned":false,"lasting.poisoned":false,"supplies.used":0,aceCount:0,bleedUsed:[],wellFed:false});save(c.id,"current",effMax(c));showRoll("Town rest",null,"Full Health, statuses cleared, Supplies refilled, abilities reset.",c.name);break}
+  case "newday":{const uses={};Object.keys(c.uses).forEach(k=>uses["uses."+k]=0);saveMany(c.id,{...uses,wellFed:false});save(c.id,"current",Math.min(c.current,effMax(c)));break}
+  case "toggle-add":view.addWeapon=!view.addWeapon;break;
+  case "add-catalog":{const n=$("#w-cat").value;const w=CATALOG.find(x=>x.name===n);if(w)save(c.id,"weapons",[...c.weapons,clone(w)]);break}
+  case "add-custom":{const w={name:$("#cw-name").value.trim()||"Custom weapon",cat:$("#cw-cat").value,grit:+$("#cw-grit").value||2,arm:$("#cw-arm").value.trim().toUpperCase(),short:$("#cw-short").value.trim().toUpperCase(),long:$("#cw-long").value.trim().toUpperCase(),distant:$("#cw-distant").value.trim().toUpperCase()};save(c.id,"weapons",[...c.weapons,w]);break}
+  case "del-weapon":save(c.id,"weapons",c.weapons.filter((_,i)=>i!==+el.dataset.i));break;
+  case "add-item":{const v=$("#new-item").value.trim();if(v)save(c.id,"items",[...c.items,v]);break}
+  case "del-item":save(c.id,"items",c.items.filter((_,i)=>i!==+el.dataset.i));break;
+  case "supply-use":save(c.id,"supplies.used",c.supplies.used+1);break;
+  case "supply-slots":{const s=clamp(c.supplies.slots+(+el.dataset.d),0,10);saveMany(c.id,{"supplies.slots":s,"supplies.used":Math.min(c.supplies.used,s)});break}
+  case "earn":{const n=Math.max(1,+$("#earn").value||1);saveMany(c.id,{"prestige.total":Math.min(100,c.prestige.total+n),"prestige.unclaimed":c.prestige.unclaimed+Math.min(n,100-c.prestige.total)});break}
+  case "jackpot":if(c.prestige.total<100)saveMany(c.id,{"prestige.total":c.prestige.total+1,"prestige.unclaimed":c.prestige.unclaimed+1});break;
+  case "spend":{const k=el.dataset.k,cost=+el.dataset.cost;if(c.prestige.unclaimed<cost)return;const pick=$("#sp-"+k)?.value;
+    if(k==="practice"){const s=c.skills[pick];if(s.b<1)return;save(c.id,"skills."+pick,{b:s.b-1,g:s.g+1})}
+    if(k==="health"){save(c.id,"improveHealth",c.improveHealth+1);save(c.id,"current",c.current+1)}
+    if(k==="talent")save(c.id,"talents",[...c.talents,pick]);
+    if(k==="ability"){save(c.id,"unlocked",[...c.unlocked,pick]);if(pick==="armament2"){const gi=c.weapons.findIndex(w=>w.name===GAUNTLET.name);if(gi>=0){const ws=clone(c.weapons);ws[gi].slots=2;save(c.id,"weapons",ws)}}}
+    if(k==="master"){const s=c.skills[pick];save(c.id,"skills."+pick,{b:s.b+1,g:s.g});save(c.id,"masterCount",c.masterCount+1)}
+    if(k==="aith2")save(c.id,"unlocked",[...c.unlocked,"aith2"]);
+    save(c.id,"prestige.unclaimed",c.prestige.unclaimed-cost);break}
+  case "custom-roll":{const p={b:clamp(+$("#cr-b").value||0,0,20),g:clamp(+$("#cr-g").value||0,0,20)};const r=rollDice(p,{talent:$("#cr-t").checked});addAces(c,r);showRoll(`Roll ${poolStr(p)}`,r,"",c.name);break}
+  case "delete-ask":view.confirmDel=c.id;break;
+  case "delete-no":view.confirmDel=null;break;
+  case "delete-yes":{const id=c.id;view={name:"roster"};await deleteChar(id);break}
+  default:return;
+  }
+  render();
+});
+
+async function finishCreate(){
+  const d=view.draft,t=TRADES[d.trade],tier=TIERS[d.tier];
+  const c=newChar();
+  Object.assign(c,{name:d.name.trim(),player:d.player.trim(),trade:d.trade,tier:d.tier,skills:clone(d.skills),disposition:d.disposition,history:d.history,appearance:d.appearance,keepsakes:d.keepsakes,packs:d.packs,wallet:d.wallet,scrap:tier.scrap});
+  c.unlocked=t.ab.filter(a=>a.start).map(a=>a.id);
+  c.prestige={total:tier.p,unclaimed:tier.p};
+  const find=n=>clone(CATALOG.find(w=>w.name===n));
+  if(d.tier===0)c.weapons=[find("Used Pistol"),find("Pocket Knife")];
+  else c.weapons=[d.rangedPick&&find(d.rangedPick),d.meleePick&&find(d.meleePick)].filter(Boolean);
+  if(d.trade==="mechanic")c.weapons.push(clone(GAUNTLET));
+  c.items=d.packs.flatMap(n=>PACKS.find(p=>p.name===n).items);
+  const id=await createChar(c);
+  view={name:"sheet",id};window.scrollTo(0,0);render();
+}
+
+/* text & number inputs */
+document.addEventListener("input",e=>{
+  const el=e.target;
+  if(el.dataset.draft!==undefined&&view.draft){view.draft[el.dataset.draft]=el.value;if(el.tagName==="SELECT")render();else{const nav=document.querySelector('[data-action="step"][data-d="1"]');if(nav){const ok=stepValid(view.draft,view.step).ok;nav.disabled=!ok}}return}
+  if(el.dataset.draftNum!==undefined&&view.draft){view.draft[el.dataset.draftNum]=+el.value;const t=TIERS[view.draft.tier];view.draft.packs=view.draft.packs.slice(0,t.packs);return}
+  const c=cur();if(!c)return;
+  if(el.dataset.field)save(c.id,el.dataset.field,el.value);
+  if(el.dataset.num){let v=parseFloat(el.value);if(isNaN(v))return;if(el.dataset.num==="gritMax"){v=clamp(Math.round(v),1,12);save(c.id,"grit",Math.min(c.grit,v))}save(c.id,el.dataset.num,v)}
+  if(el.dataset.arr){const arr=clone(c[el.dataset.arr]);arr[+el.dataset.i]=el.value;save(c.id,el.dataset.arr,arr)}
+});
+document.addEventListener("change",e=>{if(e.target.dataset.num||e.target.dataset.draftNum!==undefined)requestRender()});
+document.addEventListener("keydown",e=>{if(e.key!=="Enter")return;const id=e.target.id;const map={"new-item":"add-item","d-keep":"add-keep"};if(map[id]){e.preventDefault();document.querySelector(`[data-action="${map[id]}"]`)?.click()}});
+
+renderTray();
+initStore();
+</script>
+
+</body>
+</html>
